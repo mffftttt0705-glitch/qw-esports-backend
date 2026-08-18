@@ -53,6 +53,7 @@
         .btn-warning{background:#f59e0b;color:#0b0d10;border:none;padding:6px 16px;border-radius:30px;font-size:12px;cursor:pointer}
         .btn-sm{padding:4px 14px;font-size:12px}
         .btn-xs{padding:2px 10px;font-size:11px}
+        .btn-block{width:100%;justify-content:center}
         .bottom-nav{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;background:rgba(10,14,26,0.85);backdrop-filter:blur(16px);padding:8px 0 12px;border-top:1px solid rgba(100,200,255,0.06);border-radius:0 0 40px 40px}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:#5a6f8f;font-size:11px;cursor:pointer;padding:4px 12px;border-radius:30px;background:transparent;border:none;font-family:inherit}
         .nav-item i{font-size:20px}
@@ -61,7 +62,7 @@
         .nav-item.hidden-nav{display:none!important}
         .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);justify-content:center;align-items:center;z-index:999}
         .modal-overlay.active{display:flex}
-        .modal-box{background:rgba(18,26,48,0.95);border:1px solid rgba(60,160,255,0.15);border-radius:32px;padding:32px 28px;max-width:380px;width:90%;text-align:center;animation:fadeUp 0.25s ease;max-height:90vh;overflow-y:auto}
+        .modal-box{background:rgba(18,26,48,0.95);border:1px solid rgba(60,160,255,0.15);border-radius:32px;padding:32px 28px;max-width:420px;width:90%;text-align:center;animation:fadeUp 0.25s ease;max-height:90vh;overflow-y:auto}
         .modal-box h3{font-size:20px;color:#d0e4ff;margin-bottom:8px}
         .modal-box p{color:#7a8faf;font-size:14px;margin:6px 0 20px}
         .modal-box .btn-row{display:flex;gap:10px}
@@ -70,6 +71,9 @@
         .modal-box .form-group label{display:block;font-size:13px;color:#b0b8c8;margin-bottom:4px}
         .modal-box .form-group input,.modal-box .form-group select{width:100%;background:#0b0d10;border:1px solid #2a2f3a;border-radius:12px;padding:10px 14px;color:#e8e6e3;font-size:14px;outline:none}
         .modal-box .form-group input:focus,.modal-box .form-group select:focus{border-color:#f5c842}
+        .modal-box .detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1f2630}
+        .modal-box .detail-row .label{color:#8892a8}
+        .modal-box .detail-row .value{color:#e8e6e3;font-weight:500}
         .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#1f2630;padding:12px 28px;border-radius:40px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.6);border-left:4px solid #22c55e;color:#e8e6e3;font-size:14px;display:none;max-width:90%;text-align:center}
         .toast.show{display:block;animation:fadeUp 0.3s ease}
         .toast.error{border-left-color:#ef4444}
@@ -84,6 +88,8 @@
         .status-onsale{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
         .status-soldout{background:#6b728022;color:#9ca3af;border:1px solid #6b728044}
         .status-hidden{background:#6b728022;color:#6b7280;border:1px solid #6b728044}
+        .status-refund_pending{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
+        .status-refunded{background:#a855f722;color:#a855f7;border:1px solid #a855f744}
         .empty-state{text-align:center;padding:40px 20px;color:#5a6378}
         .empty-state i{font-size:44px;opacity:0.4;display:block;margin-bottom:12px}
         .empty-state p{font-size:15px}
@@ -146,7 +152,6 @@
         #authPage .auth-box .role-row{display:flex;gap:12px;justify-content:center;font-size:13px;color:#8892a8}
         #authPage .auth-box .role-row label{display:flex;align-items:center;gap:4px;cursor:pointer}
         #authPage .auth-box .auth-error{color:#ef4444;font-size:13px;min-height:20px}
-        .btn-block{width:100%;justify-content:center}
         @media(max-width:420px){.app-wrapper{border-radius:28px;padding-bottom:66px}.view-container{padding:16px 14px}.entry-grid{gap:12px}.entry-card{padding:18px 8px}.entry-icon{width:48px;height:48px;font-size:22px}.entry-title{font-size:14px}.bottom-nav{padding:6px 0 10px}.nav-item i{font-size:18px}.nav-item span{font-size:10px}#authPage{min-height:600px}}
     </style>
 </head>
@@ -256,22 +261,21 @@
                     <div class="admin-form-group"><label><i class="fas fa-boxes"></i> 库存</label><input class="admin-form-control" id="prodQuantity" type="number" placeholder="1" value="1"></div>
                     <button class="btn btn-success" onclick="shelfProduct()"><i class="fas fa-upload"></i> 上架商品</button>
                 </div>
-                <!-- 直接发布订单到打手页面 -->
                 <div class="admin-card" style="border-left:4px solid #f59e0b;">
-                    <div class="admin-card-title"><i class="fas fa-paper-plane" style="color:#f59e0b;"></i> 直接发布订单（到打手页面）</div>
+                    <div class="admin-card-title"><i class="fas fa-paper-plane" style="color:#f59e0b;"></i> 直接发布订单</div>
                     <p style="font-size:13px;color:#8892a8;margin-bottom:12px;">无需老板购买，直接创建订单，打手可接单。</p>
                     <div class="admin-form-group"><label><i class="fas fa-gamepad"></i> 游戏</label><select class="admin-form-control" id="directGame"><option value="暗区突围">暗区突围</option><option value="三角洲">三角洲</option></select></div>
                     <div class="admin-form-group"><label><i class="fas fa-tag"></i> 标题</label><input class="admin-form-control" id="directTitle" placeholder="如：大师护航"></div>
                     <div class="admin-form-group"><label><i class="fas fa-align-left"></i> 描述</label><textarea class="admin-form-control" id="directDesc" rows="2" placeholder="服务详情"></textarea></div>
                     <div class="admin-form-group"><label><i class="fas fa-yen-sign"></i> 价格</label><input class="admin-form-control" id="directPrice" type="number" placeholder="288"></div>
-                    <button class="btn btn-warning btn-block" onclick="directPublishOrder()"><i class="fas fa-paper-plane"></i> 发布订单（待接单）</button>
+                    <button class="btn btn-warning btn-block" onclick="directPublishOrder()"><i class="fas fa-paper-plane"></i> 发布订单</button>
                 </div>
             </div>
             <div class="tab-page" id="tab-orders">
                 <div class="admin-card"><div class="admin-card-title"><i class="fas fa-filter"></i> 所有订单</div>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
                         <select class="admin-form-control" id="filterOrderStatus" style="width:140px;padding:6px 12px;" onchange="renderAdminOrders()">
-                            <option value="all">全部</option><option value="pending">待接单</option><option value="ongoing">进行中</option><option value="review">待验收</option><option value="completed">已完成</option><option value="canceled">已取消</option><option value="rejected">已驳回</option>
+                            <option value="all">全部</option><option value="pending">待接单</option><option value="ongoing">进行中</option><option value="review">待验收</option><option value="completed">已完成</option><option value="canceled">已取消</option><option value="rejected">已驳回</option><option value="refund_pending">退款申请</option><option value="refunded">已退款</option>
                         </select>
                         <button class="btn btn-outline btn-sm" onclick="renderAdminOrders()"><i class="fas fa-sync"></i> 刷新</button>
                     </div>
@@ -362,12 +366,14 @@ function toast(msg, type) {
 }
 
 function statusText(s) {
-    const map = { 'pending': '待接单', 'ongoing': '进行中', 'review': '待验收', 'completed': '已完成', 'canceled': '已取消', 'rejected': '已驳回', 'onsale': '在售', 'soldout': '已售罄', 'hidden': '已下架' };
+    const map = { 'pending': '待接单', 'ongoing': '进行中', 'review': '待验收', 'completed': '已完成', 'canceled': '已取消', 'rejected': '已驳回', 'onsale': '在售', 'soldout': '已售罄', 'hidden': '已下架', 'refund_pending': '退款申请中', 'refunded': '已退款' };
     return map[s] || s;
 }
 
 function statusClass(s) {
     if (s === 'hidden') return 'status-hidden';
+    if (s === 'refund_pending') return 'status-refund_pending';
+    if (s === 'refunded') return 'status-refunded';
     return 'status-' + s;
 }
 
@@ -476,7 +482,9 @@ async function saveAnnounce() {
         await apiRequest('/admin/announce', { method: 'PUT', body: JSON.stringify({ content, images: announceImages }) });
         toast('公告已更新', 'success');
         loadAnnounce();
-    } catch (err) { toast(err.message, 'error'); }
+    } catch (err) {
+        toast(err.message, 'error');
+    }
 }
 
 // ============================================================
@@ -736,7 +744,7 @@ async function shelfProduct() {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// ===== 直接发布订单到打手页面 =====
+// ===== 直接发布订单 =====
 window.directPublishOrder = function() {
     const game = document.getElementById('directGame').value;
     const title = document.getElementById('directTitle').value.trim();
@@ -762,7 +770,7 @@ async function doDirectPublish(game, title, desc, price) {
     }
 }
 
-// ===== 订单管理 =====
+// ===== 订单管理（管理员） =====
 async function renderAdminOrders() {
     try {
         const orders = await apiRequest('/admin/orders');
@@ -772,25 +780,38 @@ async function renderAdminOrders() {
             return;
         }
         let html = '<div class="table-wrap"><table><thead><tr><th>订单号</th><th>标题</th><th>金额</th><th>状态</th><th>操作</th></tr></thead><tbody>';
-        orders.forEach(o => {
+        for (const o of orders) {
             let actions = '';
             if (o.status === 'pending') actions += `<button class="btn btn-success btn-xs" onclick="adminAssignHandler('${o.id}')">指派</button>`;
-            if (o.status === 'ongoing') actions += `<button class="btn btn-warning btn-xs" onclick="adminForceComplete('${o.id}')">强制完成</button>`;
+            if (o.status === 'ongoing') {
+                actions += `<button class="btn btn-warning btn-xs" onclick="adminForceComplete('${o.id}')">强制完成</button>`;
+                actions += `<button class="btn btn-danger btn-xs" onclick="adminCancelOrder('${o.id}')">取消</button>`;
+            }
             if (o.status === 'review') {
                 actions += `<button class="btn btn-success btn-xs" onclick="adminConfirmComplete('${o.id}')">确认</button>`;
                 actions += `<button class="btn btn-danger btn-xs" onclick="adminRejectOrder('${o.id}')">驳回</button>`;
             }
-            if (o.status === 'completed') actions += `<button class="btn btn-primary btn-xs" onclick="adminSettleOrder('${o.id}')">结算</button>`;
-            if (o.status !== 'completed' && o.status !== 'canceled' && o.status !== 'rejected') {
-                actions += `<button class="btn btn-danger btn-xs" onclick="adminCancelOrder('${o.id}')">取消</button>`;
+            if (o.status === 'completed') {
+                actions += `<button class="btn btn-primary btn-xs" onclick="adminSettleOrder('${o.id}')">结算</button>`;
             }
-            html += `<tr><td>${o.id}</td><td>${o.title}</td><td>¥${o.price}</td><td><span class="status-badge ${statusClass(o.status)}">${statusText(o.status)}</span></td><td><div class="action-group">${actions}</div></td></tr>`;
-        });
+            if (o.status === 'refund_pending') {
+                actions += `<button class="btn btn-success btn-xs" onclick="adminRefundApprove('${o.id}')">通过退款</button>`;
+                actions += `<button class="btn btn-danger btn-xs" onclick="adminRefundReject('${o.id}')">拒绝退款</button>`;
+            }
+            html += `<tr>
+                <td>${o.id}</td>
+                <td>${o.title}</td>
+                <td>¥${o.price}</td>
+                <td><span class="status-badge ${statusClass(o.status)}">${statusText(o.status)}</span></td>
+                <td><div class="action-group">${actions}</div></td>
+            </tr>`;
+        }
         html += '</tbody></table></div>';
         container.innerHTML = html;
     } catch (err) { console.error(err); }
 }
 
+// 管理员指派打手
 window.adminAssignHandler = function(orderId) {
     const handlerId = prompt('请输入打手ID：');
     if (!handlerId) return;
@@ -799,6 +820,7 @@ window.adminAssignHandler = function(orderId) {
         .catch(err => toast(err.message, 'error'));
 };
 
+// 管理员强制完成
 window.adminForceComplete = function(orderId) {
     confirmAction('确认强制完成', '确认强制完成此订单？', '确认强制完成', `doForceComplete('${orderId}')`);
 };
@@ -810,6 +832,7 @@ async function doForceComplete(orderId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
+// 管理员确认完成
 window.adminConfirmComplete = function(orderId) {
     confirmAction('确认验收通过', '确认此订单验收通过？', '确认通过', `doConfirmComplete('${orderId}')`);
 };
@@ -821,6 +844,7 @@ async function doConfirmComplete(orderId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
+// 管理员驳回
 window.adminRejectOrder = function(orderId) {
     const reason = prompt('请输入驳回原因：');
     if (reason === null) return;
@@ -829,6 +853,7 @@ window.adminRejectOrder = function(orderId) {
         .catch(err => toast(err.message, 'error'));
 };
 
+// 管理员取消订单
 window.adminCancelOrder = function(orderId) {
     confirmAction('确认取消', '确认取消此订单？', '确认取消', `doCancelOrder('${orderId}')`);
 };
@@ -838,13 +863,62 @@ async function doCancelOrder(orderId) {
         toast('已取消', 'warning');
         renderAdminOrders();
     } catch (err) { toast(err.message, 'error'); }
+};
+
+// 管理员结算（自定义金额）
+window.adminSettleOrder = function(orderId) {
+    showCustomModal(`
+        <h3><i class="fas fa-coins"></i> 结算打手</h3>
+        <p style="color:#8892a8;font-size:14px;">请输入打手收入金额（元）：</p>
+        <div class="form-group"><label>金额</label><input class="admin-form-control" id="settleAmountInput" type="number" placeholder="输入金额" step="0.01"></div>
+        <div class="btn-row">
+            <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+            <button class="btn btn-success" onclick="doSettleOrder('${orderId}')">确认结算</button>
+        </div>
+    `);
+};
+
+async function doSettleOrder(orderId) {
+    const earning = document.getElementById('settleAmountInput').value;
+    if (!earning) return toast('请输入金额', 'warning');
+    const amount = parseFloat(earning);
+    if (isNaN(amount) || amount < 0) return toast('请输入有效金额', 'error');
+    closeCustomModal();
+    try {
+        await apiRequest('/admin/orders/' + orderId + '/settle', { method: 'PUT', body: JSON.stringify({ earning: amount }) });
+        toast(`✅ 结算成功，打手收入 ¥${amount}`, 'success');
+        renderAdminOrders();
+        renderHandlerView();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
 }
 
-window.adminSettleOrder = function(orderId) {
-    const earning = prompt('请输入打手收入（元）：');
-    if (!earning) return;
-    apiRequest('/admin/orders/' + orderId + '/settle', { method: 'PUT', body: JSON.stringify({ earning: parseFloat(earning) }) })
-        .then(() => { toast('结算成功', 'success'); renderAdminOrders(); })
+// 管理员处理退款 - 通过
+window.adminRefundApprove = function(orderId) {
+    confirmAction('确认通过退款', '确认通过此退款申请？红钻将返还给老板。', '确认通过', `doRefundApprove('${orderId}')`);
+};
+async function doRefundApprove(orderId) {
+    try {
+        await apiRequest('/admin/orders/' + orderId + '/refund', { method: 'PUT', body: JSON.stringify({ approve: true }) });
+        toast('✅ 退款已通过，红钻已返还', 'success');
+        renderAdminOrders();
+        renderBossView();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
+}
+
+// 管理员处理退款 - 拒绝
+window.adminRefundReject = function(orderId) {
+    const reason = prompt('请输入拒绝原因：');
+    if (reason === null) return;
+    apiRequest('/admin/orders/' + orderId + '/refund', { method: 'PUT', body: JSON.stringify({ approve: false, rejectReason: reason }) })
+        .then(() => {
+            toast('已拒绝退款', 'warning');
+            renderAdminOrders();
+            renderBossView();
+        })
         .catch(err => toast(err.message, 'error'));
 };
 
@@ -875,7 +949,6 @@ async function renderRecharges() {
     } catch (err) { console.error(err); }
 }
 
-// 充值审核通过
 window.confirmApproveRecharge = function(rechargeId) {
     confirmAction('确认通过充值', '确认通过此充值申请？红钻将直接到账。', '确认通过', `doApproveRecharge('${rechargeId}')`);
 };
@@ -888,7 +961,6 @@ async function doApproveRecharge(rechargeId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// 充值审核拒绝
 window.confirmRejectRecharge = function(rechargeId) {
     confirmAction('确认拒绝充值', '确认拒绝此充值申请？', '确认拒绝', `doRejectRecharge('${rechargeId}')`);
 };
@@ -900,7 +972,6 @@ async function doRejectRecharge(rechargeId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// 删除充值申请
 window.confirmDeleteRecharge = function(rechargeId) {
     confirmAction('确认删除', '确认删除此充值申请？', '确认删除', `doDeleteRecharge('${rechargeId}')`);
 };
@@ -1025,13 +1096,48 @@ async function renderBossView() {
         for (const o of orders) {
             let actions = '';
             if (o.status === 'review') actions += `<button class="btn btn-success btn-xs" onclick="confirmBossComplete('${o._id}')">确认完成</button>`;
+            if (o.status === 'ongoing' || o.status === 'pending') {
+                actions += `<button class="btn btn-warning btn-xs" onclick="requestRefund('${o._id}')">申请退款</button>`;
+            }
             actions += `<button class="btn btn-primary btn-xs" onclick="openChat('${o._id}')">聊天</button>`;
-            html2 += `<tr><td>${o._id}</td><td>${o.title}</td><td>¥${o.price}</td><td><span class="status-badge ${statusClass(o.status)}">${statusText(o.status)}</span></td><td>${actions}</td></tr>`;
+            actions += `<button class="btn btn-outline btn-xs" onclick="viewOrderDetail('${o._id}')">详情</button>`;
+            html2 += `<tr><td>${o._id}</td><td>${o.title}</td><td>¥${o.price}</td><td><span class="status-badge ${statusClass(o.status)}">${statusText(o.status)}</span></td><td><div class="action-group">${actions}</div></td></tr>`;
         }
         html2 += '</tbody></table></div>';
         myContainer.innerHTML = html2;
     } catch (err) { console.error(err); }
 }
+
+// 查看订单详情
+window.viewOrderDetail = function(orderId) {
+    apiRequest('/orders/' + orderId).then(order => {
+        const handlerName = order.handlerId ? order.handlerId : '未指派';
+        const messagesHtml = order.messages && order.messages.length > 0 ?
+            order.messages.map(msg => `<div><strong>${msg.sender}:</strong> ${msg.content} <span style="font-size:11px;color:#8892a8;">${msg.time}</span></div>`).join('') :
+            '暂无消息';
+        showCustomModal(`
+            <h3><i class="fas fa-info-circle"></i> 订单详情</h3>
+            <div style="margin:12px 0;text-align:left;">
+                <div class="detail-row"><span class="label">订单号</span><span class="value">${order.id}</span></div>
+                <div class="detail-row"><span class="label">游戏</span><span class="value">${order.game}</span></div>
+                <div class="detail-row"><span class="label">标题</span><span class="value">${order.title}</span></div>
+                <div class="detail-row"><span class="label">价格</span><span class="value">¥${order.price}</span></div>
+                <div class="detail-row"><span class="label">状态</span><span class="value"><span class="status-badge ${statusClass(order.status)}">${statusText(order.status)}</span></span></div>
+                <div class="detail-row"><span class="label">打手</span><span class="value">${handlerName}</span></div>
+                <div class="detail-row"><span class="label">创建时间</span><span class="value">${order.createTime}</span></div>
+                ${order.startTime ? `<div class="detail-row"><span class="label">开始时间</span><span class="value">${order.startTime}</span></div>` : ''}
+                ${order.endTime ? `<div class="detail-row"><span class="label">结束时间</span><span class="value">${order.endTime}</span></div>` : ''}
+                ${order.settled ? `<div class="detail-row"><span class="label">结算金额</span><span class="value">¥${order.settledAmount||order.price}</span></div>` : ''}
+                ${order.refundReason ? `<div class="detail-row"><span class="label">退款原因</span><span class="value">${order.refundReason}</span></div>` : ''}
+            </div>
+            <div style="border-top:1px solid #2a2f3a;padding-top:12px;text-align:left;">
+                <div style="font-weight:600;margin-bottom:8px;">聊天记录</div>
+                <div style="max-height:200px;overflow-y:auto;font-size:13px;background:#0b0d10;padding:8px;border-radius:8px;">${messagesHtml}</div>
+            </div>
+            <div class="btn-row"><button class="btn btn-outline" onclick="closeCustomModal()">关闭</button></div>
+        `);
+    }).catch(err => toast(err.message, 'error'));
+};
 
 window.confirmBuy = function(productId) {
     confirmAction('确认购买', '确认购买此商品？将扣除对应红钻。', '确认购买', `doBuy('${productId}')`);
@@ -1041,7 +1147,10 @@ async function doBuy(productId) {
         const data = await apiRequest('/orders/buy', { method: 'POST', body: JSON.stringify({ productId }) });
         toast('购买成功！订单号：' + data.orderId, 'success');
         renderBossView();
-    } catch (err) { toast(err.message, 'error'); }
+        renderHandlerView();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
 }
 
 window.confirmBossComplete = function(orderId) {
@@ -1050,9 +1159,39 @@ window.confirmBossComplete = function(orderId) {
 async function doBossComplete(orderId) {
     try {
         await apiRequest('/orders/' + orderId + '/boss-confirm', { method: 'PUT' });
-        toast('已确认完成', 'success');
+        toast('已确认完成，等待管理员结算', 'success');
         renderBossView();
-    } catch (err) { toast(err.message, 'error'); }
+        renderHandlerView();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
+}
+
+// 老板发起退款
+window.requestRefund = function(orderId) {
+    showCustomModal(`
+        <h3><i class="fas fa-undo"></i> 申请退款</h3>
+        <p style="color:#8892a8;font-size:14px;">请填写退款原因：</p>
+        <div class="form-group"><label>退款原因</label><textarea class="admin-form-control" id="refundReasonInput" rows="3" placeholder="请详细说明退款原因..."></textarea></div>
+        <div class="btn-row">
+            <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+            <button class="btn btn-warning" onclick="doRequestRefund('${orderId}')">提交退款</button>
+        </div>
+    `);
+};
+
+async function doRequestRefund(orderId) {
+    const reason = document.getElementById('refundReasonInput').value.trim();
+    if (!reason) return toast('请填写退款原因', 'warning');
+    closeCustomModal();
+    try {
+        await apiRequest('/orders/' + orderId + '/refund-request', { method: 'PUT', body: JSON.stringify({ reason }) });
+        toast('退款申请已提交，等待管理员审核', 'success');
+        renderBossView();
+        renderAdminOrders();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
 }
 
 // ============================================================
@@ -1097,11 +1236,12 @@ async function renderHandlerView() {
                 let actions = '';
                 if (o.status === 'ongoing') actions += `<button class="btn btn-warning btn-sm" onclick="confirmSubmitComplete('${o._id}')">提交完成</button>`;
                 actions += `<button class="btn btn-primary btn-sm" onclick="openChat('${o._id}')">聊天</button>`;
+                actions += `<button class="btn btn-outline btn-xs" onclick="viewOrderDetail('${o._id}')">详情</button>`;
                 html += `
                     <div class="card" style="padding:14px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
                             <div><strong>${o.game} · ${o.title}</strong><br><span style="font-size:13px;color:#8892a8;">¥${o.price} ｜ 状态：<span class="status-badge ${statusCls}">${statusText2}</span></span></div>
-                            ${actions}
+                            <div style="display:flex;gap:4px;flex-wrap:wrap;">${actions}</div>
                         </div>
                     </div>
                 `;
@@ -1116,11 +1256,14 @@ async function renderHandlerView() {
         } else {
             let html = '';
             for (const o of completed) {
+                const settledText = o.settled ? '已结算' : '待结算';
+                const settledCls = o.settled ? 'status-onsale' : 'status-pending';
                 html += `
                     <div class="card" style="padding:14px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
-                            <div><strong>${o.game} · ${o.title}</strong><br><span style="font-size:13px;color:#8892a8;">¥${o.price} ｜ ${o.endTime || o.createTime}</span></div>
+                            <div><strong>${o.game} · ${o.title}</strong><br><span style="font-size:13px;color:#8892a8;">¥${o.price} ｜ 结算：<span class="status-badge ${settledCls}">${settledText}</span> ｜ ${o.endTime || o.createTime}</span></div>
                             <button class="btn btn-primary btn-sm" onclick="openChat('${o._id}')">聊天</button>
+                            <button class="btn btn-outline btn-xs" onclick="viewOrderDetail('${o._id}')">详情</button>
                         </div>
                     </div>
                 `;
@@ -1138,7 +1281,11 @@ async function doTake(orderId) {
         await apiRequest('/orders/' + orderId + '/take', { method: 'PUT' });
         toast('接单成功', 'success');
         renderHandlerView();
-    } catch (err) { toast(err.message, 'error'); }
+        renderBossView();
+        renderAdminOrders();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
 }
 
 window.confirmSubmitComplete = function(orderId) {
@@ -1149,7 +1296,11 @@ async function doSubmitComplete(orderId) {
         await apiRequest('/orders/' + orderId + '/submit-complete', { method: 'PUT' });
         toast('已提交验收', 'success');
         renderHandlerView();
-    } catch (err) { toast(err.message, 'error'); }
+        renderBossView();
+        renderAdminOrders();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
 }
 
 // ============================================================
@@ -1248,7 +1399,7 @@ window.openChat = function(orderId) {
     apiRequest('/orders/my').then(orders => {
         const order = orders.find(o => o._id === orderId);
         if (!order) return toast('订单不存在', 'error');
-        const isEnded = ['completed','canceled','rejected'].includes(order.status);
+        const isEnded = ['completed','canceled','rejected','refunded'].includes(order.status);
         const messagesHtml = order.messages && order.messages.length > 0 ?
             order.messages.map(msg => {
                 const senderName = msg.sender === 'boss' ? '老板' : msg.sender === 'handler' ? '打手' : '系统';
