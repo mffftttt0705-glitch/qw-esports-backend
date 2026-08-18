@@ -50,7 +50,11 @@ const OrderSchema = new mongoose.Schema({
   productId: mongoose.Schema.Types.ObjectId,
   bossId: mongoose.Schema.Types.ObjectId,
   handlerId: mongoose.Schema.Types.ObjectId,
-  status: { type: String, enum: ['pending', 'ongoing', 'review', 'completed', 'canceled', 'rejected', 'refund_pending', 'refunded'], default: 'pending' },
+  status: { 
+    type: String, 
+    enum: ['pending', 'ongoing', 'review', 'completed', 'canceled', 'rejected', 'refund_pending', 'refunded'], 
+    default: 'pending' 
+  },
   price: Number,
   game: String,
   title: String,
@@ -258,15 +262,22 @@ app.post('/api/orders/buy', verifyToken, async (req, res) => {
   res.json({ orderId: order._id, message: '购买成功' });
 });
 
+// ===== 直接发布订单（管理员创建订单到打手页面）- 修复版 =====
 app.post('/api/admin/orders/direct', verifyToken, async (req, res) => {
   try {
-    const user = await User.findById(req.userId);
-    if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-    const { game, title, desc, price } = req.body;
+    const admin = await User.findById(req.userId);
+    if (admin.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+    const { game, title, desc, price, bossId } = req.body;
     if (!title || !price) return res.status(400).json({ error: '请填写完整信息' });
+    // 如果没指定老板，使用管理员自己作为老板
+    let boss = admin;
+    if (bossId) {
+      const found = await User.findById(bossId);
+      if (found && found.role === 'boss') boss = found;
+    }
     const order = new Order({
       productId: null,
-      bossId: user._id,
+      bossId: boss._id,
       handlerId: null,
       status: 'pending',
       price: price,
@@ -276,7 +287,7 @@ app.post('/api/admin/orders/direct', verifyToken, async (req, res) => {
       messages: [{ sender: 'system', content: `🎉 订单已创建（管理员发布），订单号: ${order._id}`, time: new Date() }]
     });
     await order.save();
-    res.json({ success: true, message: '订单已发布' });
+    res.json({ success: true, message: '订单已发布', orderId: order._id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -373,7 +384,7 @@ app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   res.json({ message: '订单已取消' });
 });
 
-// 管理员结算（自定义金额）
+// ===== 管理员结算（自定义金额） =====
 app.put('/api/admin/orders/:id/settle', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -394,7 +405,7 @@ app.put('/api/admin/orders/:id/settle', verifyToken, async (req, res) => {
   res.json({ success: true, message: `结算成功，打手收入 ¥${amount}` });
 });
 
-// 老板发起退款
+// ===== 老板发起退款 =====
 app.put('/api/orders/:id/refund-request', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'boss') return res.status(403).json({ error: '只有老板可发起退款' });
@@ -411,7 +422,7 @@ app.put('/api/orders/:id/refund-request', verifyToken, async (req, res) => {
   res.json({ success: true, message: '退款申请已提交，等待管理员审核' });
 });
 
-// 管理员处理退款
+// ===== 管理员处理退款 =====
 app.put('/api/admin/orders/:id/refund', verifyToken, async (req, res) => {
   const admin = await User.findById(req.userId);
   if (admin.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -428,15 +439,16 @@ app.put('/api/admin/orders/:id/refund', verifyToken, async (req, res) => {
     }
     order.status = 'refunded';
     order.messages.push({ sender: 'system', content: `✅ 退款已通过，红钻已返还`, time: new Date() });
+    await order.save();
     res.json({ success: true, message: '退款已通过，红钻已返还' });
   } else {
     // 退款拒绝
-    order.status = 'ongoing'; // 恢复到进行中
+    order.status = 'ongoing';
     order.refundReason = order.refundReason + ' (已拒绝：' + (rejectReason || '无原因') + ')';
     order.messages.push({ sender: 'system', content: `❌ 退款被拒绝：${rejectReason || '无原因'}`, time: new Date() });
+    await order.save();
     res.json({ success: true, message: '退款已拒绝' });
   }
-  await order.save();
 });
 
 // ========== 充值 API ==========
