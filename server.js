@@ -9,7 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ⚠️ 把下面 "你的实际密码" 替换成你设置的真实密码！
 mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://mffttttt0705_db_user:AwkCQgIpWJIyoKEC@cluster0.lpunuuy.mongodb.net/?appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
