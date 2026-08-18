@@ -6,12 +6,345 @@
     <title>QW电竞 · 护航平台</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* ===== 样式与之前相同，省略以节省篇幅 ===== */
-        /* 请保留你之前的完整样式，或者直接复制下面的完整版 */
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI','PingFang SC',Roboto,sans-serif}
+        body{background:#0b0d15;background-image:radial-gradient(ellipse at 20% 50%,#141a2b 0%,#07090f 100%);color:#e0e6f0;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:12px}
+        .app-wrapper{max-width:480px;width:100%;background:rgba(14,18,30,0.80);backdrop-filter:blur(20px);border-radius:40px;box-shadow:0 30px 80px rgba(0,0,0,0.9);border:1px solid rgba(60,160,255,0.08);overflow:hidden;position:relative;padding-bottom:72px;min-height:700px}
+        .view-container{padding:20px 20px 16px}
+        .view{display:none;animation:fadeUp 0.3s ease}
+        .view.active{display:block}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+        .app-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;border-bottom:1px solid rgba(100,200,255,0.06);margin-bottom:20px}
+        .brand{display:flex;align-items:center;gap:10px}
+        .brand-icon{width:40px;height:40px;background:linear-gradient(145deg,#00c8ff,#0055ff);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;box-shadow:0 0 20px rgba(0,150,255,0.3)}
+        .brand-name{font-size:20px;font-weight:700;background:linear-gradient(to right,#b0e0ff,#7ac7ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .brand-name small{font-weight:300;font-size:13px;-webkit-text-fill-color:rgba(180,210,255,0.6);color:rgba(180,210,255,0.6)}
+        .header-right{font-size:13px;color:#7a8faf;display:flex;align-items:center;gap:6px}
+        .header-right i{color:#3a7eff}
+        .announcement{background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.15);border-radius:16px;padding:14px 16px;margin-bottom:16px}
+        .announcement .content{font-size:14px;color:#d0e4ff;line-height:1.6}
+        .announcement .images{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+        .announcement .images img{max-width:100px;max-height:100px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
+        .announcement .time{font-size:11px;color:#5a6378;margin-top:6px}
+        .announce-editor textarea{width:100%;background:#0b0d10;border:1px solid #2a2f3a;border-radius:12px;padding:10px 14px;color:#e8e6e3;font-size:14px;outline:none;resize:vertical;min-height:80px}
+        .announce-editor textarea:focus{border-color:#f5c842}
+        .announce-editor .image-upload{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+        .announce-editor .image-upload input[type="file"]{background:#0b0d10;border:1px solid #2a2f3a;border-radius:12px;padding:6px 12px;color:#e8e6e3;font-size:13px;max-width:200px}
+        .announce-editor .preview-images{display:flex;gap:8px;flex-wrap:wrap}
+        .announce-editor .preview-images img{max-width:60px;max-height:60px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
+        .entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0 16px}
+        .entry-card{background:rgba(18,24,42,0.7);border-radius:24px;padding:22px 12px 18px;text-align:center;border:1px solid rgba(70,150,255,0.06);box-shadow:0 8px 24px rgba(0,0,0,0.3);cursor:pointer;transition:all 0.25s}
+        .entry-card:active{transform:scale(0.95)}
+        .entry-icon{width:56px;height:56px;margin:0 auto 12px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;background:linear-gradient(145deg,#10182e,#1a2648);color:#6ab0ff}
+        .entry-title{font-size:16px;font-weight:600;color:#e4edff}
+        .entry-sub{font-size:12px;color:#7a8faf}
+        .entry-badge{display:inline-block;margin-top:10px;padding:3px 12px;background:rgba(60,160,255,0.08);border-radius:30px;font-size:10px;color:#6a9fd6;border:1px solid rgba(60,160,255,0.06)}
+        .section-title{font-size:18px;font-weight:600;color:#d0e4ff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+        .section-title i{color:#3a7eff}
+        .list-item{background:rgba(18,24,42,0.5);border-radius:20px;padding:16px 18px;margin-bottom:12px;border:1px solid rgba(70,150,255,0.04);display:flex;justify-content:space-between;align-items:center}
+        .list-item .left .name{font-weight:500;color:#e4edff;font-size:15px}
+        .list-item .left .desc{font-size:12px;color:#7a8faf}
+        .list-item .right .price{font-weight:600;color:#69db7c;font-size:16px}
+        .list-item .right .tag{font-size:11px;background:rgba(60,160,255,0.1);padding:2px 12px;border-radius:30px;color:#6ab0ff}
+        .btn-primary{background:linear-gradient(145deg,#1a6aff,#0044cc);border:none;color:#fff;padding:8px 20px;border-radius:40px;font-weight:500;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(0,80,255,0.2)}
+        .btn-primary:active{transform:scale(0.96)}
+        .btn-outline{background:transparent;border:1px solid rgba(60,160,255,0.2);color:#b0c8e6;padding:8px 20px;border-radius:40px;font-size:13px;cursor:pointer}
+        .btn-success{background:#22c55e;color:#fff;border:none;padding:6px 16px;border-radius:30px;font-size:12px;cursor:pointer}
+        .btn-danger{background:#ef4444;color:#fff;border:none;padding:6px 16px;border-radius:30px;font-size:12px;cursor:pointer}
+        .btn-warning{background:#f59e0b;color:#0b0d10;border:none;padding:6px 16px;border-radius:30px;font-size:12px;cursor:pointer}
+        .btn-sm{padding:4px 14px;font-size:12px}
+        .btn-xs{padding:2px 10px;font-size:11px}
+        .btn-block{width:100%;justify-content:center}
+        .bottom-nav{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;background:rgba(10,14,26,0.85);backdrop-filter:blur(16px);padding:8px 0 12px;border-top:1px solid rgba(100,200,255,0.06);border-radius:0 0 40px 40px}
+        .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:#5a6f8f;font-size:11px;cursor:pointer;padding:4px 12px;border-radius:30px;background:transparent;border:none;font-family:inherit}
+        .nav-item i{font-size:20px}
+        .nav-item.active{color:#b8dcff}
+        .nav-item.active i{color:#3a7eff;text-shadow:0 0 20px rgba(0,80,255,0.3)}
+        .nav-item.hidden-nav{display:none!important}
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);justify-content:center;align-items:center;z-index:999}
+        .modal-overlay.active{display:flex}
+        .modal-box{background:rgba(18,26,48,0.95);border:1px solid rgba(60,160,255,0.15);border-radius:32px;padding:32px 28px;max-width:420px;width:90%;text-align:center;animation:fadeUp 0.25s ease;max-height:90vh;overflow-y:auto}
+        .modal-box h3{font-size:20px;color:#d0e4ff;margin-bottom:8px}
+        .modal-box p{color:#7a8faf;font-size:14px;margin:6px 0 20px}
+        .modal-box .btn-row{display:flex;gap:10px}
+        .modal-box .btn-row button{flex:1;padding:12px;border-radius:60px;border:none;font-weight:600;cursor:pointer}
+        .modal-box .form-group{margin-bottom:14px;text-align:left}
+        .modal-box .form-group label{display:block;font-size:13px;color:#b0b8c8;margin-bottom:4px}
+        .modal-box .form-group input,.modal-box .form-group select{width:100%;background:#0b0d10;border:1px solid #2a2f3a;border-radius:12px;padding:10px 14px;color:#e8e6e3;font-size:14px;outline:none}
+        .modal-box .form-group input:focus,.modal-box .form-group select:focus{border-color:#f5c842}
+        .modal-box .detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1f2630}
+        .modal-box .detail-row .label{color:#8892a8}
+        .modal-box .detail-row .value{color:#e8e6e3;font-weight:500}
+        .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#1f2630;padding:12px 28px;border-radius:40px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.6);border-left:4px solid #22c55e;color:#e8e6e3;font-size:14px;display:none;max-width:90%;text-align:center}
+        .toast.show{display:block;animation:fadeUp 0.3s ease}
+        .toast.error{border-left-color:#ef4444}
+        .toast.warning{border-left-color:#f59e0b}
+        .status-badge{font-size:11px;padding:2px 12px;border-radius:30px;display:inline-block;font-weight:500}
+        .status-pending{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
+        .status-ongoing{background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644}
+        .status-review{background:#a855f722;color:#a855f7;border:1px solid #a855f744}
+        .status-completed{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+        .status-canceled{background:#6b728022;color:#9ca3af;border:1px solid #6b728044}
+        .status-rejected{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
+        .status-onsale{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+        .status-soldout{background:#6b728022;color:#9ca3af;border:1px solid #6b728044}
+        .status-hidden{background:#6b728022;color:#6b7280;border:1px solid #6b728044}
+        .status-refund_pending{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
+        .status-refunded{background:#a855f722;color:#a855f7;border:1px solid #a855f744}
+        .empty-state{text-align:center;padding:40px 20px;color:#5a6378}
+        .empty-state i{font-size:44px;opacity:0.4;display:block;margin-bottom:12px}
+        .empty-state p{font-size:15px}
+        .promo-badge{display:inline-block;background:#f5c84222;color:#f5c842;border:1px solid #f5c84244;border-radius:30px;padding:2px 12px;font-size:11px;margin-right:6px}
+        .role-view{display:none}
+        .role-view.active{display:block}
+        .hidden{display:none!important}
+        .admin-card{background:rgba(18,24,42,0.5);border-radius:20px;padding:18px 16px;margin-bottom:16px;border:1px solid rgba(70,150,255,0.04)}
+        .admin-card-title{font-size:16px;font-weight:600;margin-bottom:12px;color:#d0e4ff;display:flex;align-items:center;gap:8px}
+        .admin-card-title i{color:#f5c842}
+        .tab-page{display:none}
+        .tab-page.active{display:block}
+        .admin-form-group{margin-bottom:14px}
+        .admin-form-group label{display:block;font-size:13px;color:#b0b8c8;margin-bottom:4px}
+        .admin-form-group label i{margin-right:6px;color:#f5c842;width:18px}
+        .admin-form-control{width:100%;background:#0b0d10;border:1px solid #2a2f3a;border-radius:12px;padding:10px 14px;color:#e8e6e3;font-size:14px;outline:none}
+        .admin-form-control:focus{border-color:#f5c842}
+        select.admin-form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238892a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+        textarea.admin-form-control{resize:vertical;min-height:60px}
+        .action-group{display:flex;gap:4px;flex-wrap:wrap}
+        .tab-nav{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;overflow-x:auto}
+        .tab-nav button{padding:8px 16px;border-radius:30px;border:none;background:#1f2630;color:#8892a8;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+        .tab-nav button.active{background:#f5c842;color:#0b0d10}
+        .tab-nav button i{margin-right:6px}
+        .table-wrap{overflow-x:auto;margin-top:8px}
+        table{width:100%;border-collapse:collapse;font-size:13px}
+        thead{border-bottom:2px solid #2a2f3a}
+        th{padding:10px 8px;text-align:left;font-weight:600;color:#8892a8;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;white-space:nowrap}
+        td{padding:10px 8px;border-bottom:1px solid #1f2630;vertical-align:middle}
+        .chat-messages{max-height:300px;overflow-y:auto;padding:8px 0;border-top:1px solid #2a2f3a;border-bottom:1px solid #2a2f3a;margin:8px 0}
+        .chat-msg{padding:6px 10px;margin:4px 0;border-radius:12px;max-width:85%;word-break:break-word}
+        .chat-msg.boss{background:#1a2a4a;color:#b0c8e6;align-self:flex-start}
+        .chat-msg.handler{background:#2a4a2a;color:#b0e6b0;align-self:flex-end}
+        .chat-msg.system{background:#3a3a4a;color:#d0d0e0;align-self:center;font-style:italic}
+        .chat-msg .time{font-size:10px;color:#8892a8;margin-left:8px}
+        .chat-input-area{display:flex;gap:8px;margin-top:8px}
+        .chat-input-area input{flex:1;padding:8px 12px;border-radius:30px;border:1px solid #2a2f3a;background:#0b0d10;color:#e8e6e3;outline:none}
+        .chat-input-area input:focus{border-color:#f5c842}
+        .chat-readonly{opacity:0.6}
+        .chat-readonly .chat-input-area input{pointer-events:none}
+        .recharge-option{display:inline-block;padding:8px 16px;margin:4px;border:1px solid #2a2f3a;border-radius:12px;cursor:pointer;transition:0.2s}
+        .recharge-option:hover{border-color:#f5c842;background:#1f2630}
+        .recharge-option.selected{border-color:#f5c842;background:#f5c84222}
+        .mail-item{padding:10px;border-bottom:1px solid #1f2630}
+        .mail-item .mail-title{font-weight:600}
+        .mail-item .mail-time{font-size:12px;color:#8892a8}
+        .account-info{display:flex;flex-direction:column;gap:8px}
+        .account-info .info-row{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(0,0,0,0.2);border-radius:12px}
+        .account-info .info-row .label{color:#8892a8}
+        .account-info .info-row .value{color:#e8e6e3;font-weight:500}
+        #authPage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:700px;padding:20px;text-align:center}
+        #authPage .logo{font-size:32px;font-weight:700;background:linear-gradient(135deg,#f5c842,#dbaa2a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+        #authPage .logo i{font-size:40px;color:#f5c842;-webkit-text-fill-color:#f5c842;margin-right:10px}
+        #authPage .sub{color:#8892a8;font-size:14px;margin-bottom:30px}
+        #authPage .auth-box{width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px}
+        #authPage .auth-box input{width:100%;padding:14px;border-radius:60px;background:#0b0d10;border:1px solid #2a2f3a;color:#fff;font-size:16px;text-align:center;outline:none}
+        #authPage .auth-box input:focus{border-color:#f5c842}
+        #authPage .auth-box .btn-row{display:flex;gap:10px}
+        #authPage .auth-box .btn-row button{flex:1;padding:12px;border-radius:60px;border:none;font-weight:600;cursor:pointer}
+        #authPage .auth-box .role-row{display:flex;gap:12px;justify-content:center;font-size:13px;color:#8892a8}
+        #authPage .auth-box .role-row label{display:flex;align-items:center;gap:4px;cursor:pointer}
+        #authPage .auth-box .auth-error{color:#ef4444;font-size:13px;min-height:20px}
+        @media(max-width:420px){.app-wrapper{border-radius:28px;padding-bottom:66px}.view-container{padding:16px 14px}.entry-grid{gap:12px}.entry-card{padding:18px 8px}.entry-icon{width:48px;height:48px;font-size:22px}.entry-title{font-size:14px}.bottom-nav{padding:6px 0 10px}.nav-item i{font-size:18px}.nav-item span{font-size:10px}#authPage{min-height:600px}}
     </style>
 </head>
 <body>
-<!-- 页面结构不变，只修改 JavaScript 部分 -->
+
+<!-- ===== 登录/注册页面 ===== -->
+<div id="authPage">
+    <div class="logo"><i class="fas fa-crosshairs"></i> QW电竞</div>
+    <div class="sub">护航平台 · 暗区突围 / 三角洲</div>
+    <div class="auth-box">
+        <input type="text" id="authUsername" placeholder="用户名" />
+        <input type="password" id="authPassword" placeholder="密码" />
+        <div id="authError" class="auth-error"></div>
+        <div class="btn-row">
+            <button class="btn btn-success" onclick="doAuthLogin()" style="flex:1;background:#22c55e;color:#fff;padding:12px;border-radius:60px;border:none;font-weight:600;cursor:pointer">登录</button>
+            <button class="btn btn-primary" onclick="doAuthRegister()" style="flex:1;background:linear-gradient(145deg,#1a6aff,#0044cc);color:#fff;padding:12px;border-radius:60px;border:none;font-weight:600;cursor:pointer">注册</button>
+        </div>
+        <div class="role-row">
+            <label><input type="radio" name="authRole" value="boss" checked> 老板</label>
+            <label><input type="radio" name="authRole" value="handler"> 打手</label>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 主应用 ===== -->
+<div id="mainApp" class="app-wrapper hidden">
+    <div class="view-container">
+        <div class="app-header">
+            <div class="brand">
+                <div class="brand-icon">QW</div>
+                <span class="brand-name">电竞 <small>· 护航</small></span>
+            </div>
+            <div class="header-right">
+                <i class="fas fa-user"></i> <span id="currentUserDisplay">未登录</span>
+                <button class="btn btn-outline btn-sm" onclick="logout()" style="margin-left:8px;padding:2px 10px;font-size:11px;" id="logoutBtn">退出</button>
+            </div>
+        </div>
+
+        <!-- 首页 -->
+        <div class="view active" id="view-home">
+            <div class="announcement" id="homeAnnounce">
+                <div class="content" id="announceContent">加载中...</div>
+                <div class="images" id="announceImages"></div>
+                <div class="time" id="announceTime"></div>
+            </div>
+            <div class="entry-grid" id="homeEntryGrid">
+                <div class="entry-card" data-target="boss" id="cardBoss"><div class="entry-icon"><i class="fas fa-shopping-cart"></i></div><div class="entry-title">商城</div><div class="entry-sub">购买护航服务</div><div class="entry-badge"><i class="fas fa-tag"></i> 选购</div></div>
+                <div class="entry-card" data-target="handler" id="cardHandler"><div class="entry-icon"><i class="fas fa-gamepad"></i></div><div class="entry-title">打手</div><div class="entry-sub">接单服务</div><div class="entry-badge"><i class="fas fa-handshake"></i> 接单</div></div>
+                <div class="entry-card" data-target="admin" id="cardAdmin"><div class="entry-icon"><i class="fas fa-user-cog"></i></div><div class="entry-title">管理后台</div><div class="entry-sub">平台管理</div><div class="entry-badge"><i class="fas fa-lock"></i> 管理员</div></div>
+                <div class="entry-card" data-target="account" id="cardAccount"><div class="entry-icon"><i class="fas fa-user"></i></div><div class="entry-title">账号管理</div><div class="entry-sub">个人信息</div><div class="entry-badge"><i class="fas fa-edit"></i> 我的</div></div>
+            </div>
+            <div style="margin-top:16px;background:rgba(18,24,42,0.4);border-radius:20px;padding:14px 16px;border:1px solid rgba(70,150,255,0.04);">
+                <div style="display:flex;justify-content:space-between;font-size:13px;color:#7a8faf;"><span><i class="fas fa-fire" style="color:#ffb74d;"></i> 热门护航</span></div>
+                <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+                    <div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);"><span>🔫 暗区突围 · 大师护航</span><span style="color:#69db7c;">¥288/局</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);"><span>🚁 三角洲 · 精英护航</span><span style="color:#69db7c;">¥350/局</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 老板视图 -->
+        <div class="role-view" id="view-boss">
+            <div class="card" style="background:linear-gradient(135deg,#1a2a4a,#0b0d15);border:1px solid #f5c84244;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                    <div><div style="font-size:14px;color:#8892a8;">红钻余额</div><div style="font-size:28px;font-weight:700;color:#f5c842;" id="bossDiamond">0</div></div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-warning btn-sm" onclick="openRecharge()"><i class="fas fa-plus-circle"></i> 充值</button>
+                        <button class="btn btn-primary btn-sm" onclick="openMail()"><i class="fas fa-envelope"></i> 邮件 <span id="unreadMailCount" class="badge" style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:30px;font-size:11px;">0</span></button>
+                    </div>
+                </div>
+                <div style="font-size:13px;color:#8892a8;margin-top:4px;">1元 = 10红钻</div>
+            </div>
+            <div class="card"><div class="card-title"><i class="fas fa-shopping-cart"></i> 可购买护航 <span class="badge" id="bossProductCount">0</span></div><div id="bossProductList"></div></div>
+            <div class="card"><div class="card-title"><i class="fas fa-history"></i> 我的订单</div><div id="bossMyOrders"></div></div>
+        </div>
+
+        <!-- 打手视图 -->
+        <div class="role-view" id="view-handler">
+            <div class="card"><div class="card-title"><i class="fas fa-wallet"></i> 我的余额</div><div style="font-size:24px;font-weight:700;color:#69db7c;" id="handlerBalance">¥0</div></div>
+            <div class="card"><div class="card-title"><i class="fas fa-clock"></i> 待接单 <span class="badge" id="handlerPendingCount">0</span></div><div id="handlerPendingList"></div></div>
+            <div class="card"><div class="card-title"><i class="fas fa-check-circle"></i> 已接单 / 进行中</div><div id="handlerOngoingList"></div></div>
+            <div class="card"><div class="card-title"><i class="fas fa-check-double"></i> 已完成订单</div><div id="handlerCompletedList"></div></div>
+        </div>
+
+        <!-- 管理员视图 -->
+        <div class="role-view" id="view-admin">
+            <div class="tab-nav">
+                <button class="active" data-tab="tab-dashboard"><i class="fas fa-chart-pie"></i> 仪表盘</button>
+                <button data-tab="tab-products"><i class="fas fa-boxes"></i> 商品管理</button>
+                <button data-tab="tab-orders"><i class="fas fa-list-ul"></i> 订单管理</button>
+                <button data-tab="tab-recharges"><i class="fas fa-coins"></i> 充值管理</button>
+                <button data-tab="tab-users"><i class="fas fa-users"></i> 用户管理</button>
+                <button data-tab="tab-announce"><i class="fas fa-bullhorn"></i> 公告管理</button>
+            </div>
+            <div class="tab-page active" id="tab-dashboard">
+                <div class="admin-card"><div class="admin-card-title"><i class="fas fa-chart-simple"></i> 数据概览</div><div id="statsGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;"></div></div>
+                <div class="admin-card"><div class="admin-card-title"><i class="fas fa-clock"></i> 最近订单</div><div id="recentOrdersList"></div></div>
+            </div>
+            <div class="tab-page" id="tab-products">
+                <div class="admin-card"><div class="admin-card-title"><i class="fas fa-filter"></i> 商品列表</div><div id="productsList"></div></div>
+                <div class="admin-card" style="border-left:4px solid #22c55e;">
+                    <div class="admin-card-title"><i class="fas fa-plus-circle" style="color:#22c55e;"></i> 上架新商品</div>
+                    <div class="admin-form-group"><label><i class="fas fa-gamepad"></i> 游戏</label><select class="admin-form-control" id="prodGame"><option value="暗区突围">暗区突围</option><option value="三角洲">三角洲</option></select></div>
+                    <div class="admin-form-group"><label><i class="fas fa-tag"></i> 标题</label><input class="admin-form-control" id="prodTitle" placeholder="如：大师护航"></div>
+                    <div class="admin-form-group"><label><i class="fas fa-align-left"></i> 描述</label><textarea class="admin-form-control" id="prodDesc" rows="2" placeholder="服务详情"></textarea></div>
+                    <div class="admin-form-group"><label><i class="fas fa-yen-sign"></i> 价格</label><input class="admin-form-control" id="prodPrice" type="number" placeholder="288"></div>
+                    <div class="admin-form-group"><label><i class="fas fa-boxes"></i> 库存</label><input class="admin-form-control" id="prodQuantity" type="number" placeholder="1" value="1"></div>
+                    <button class="btn btn-success" onclick="shelfProduct()"><i class="fas fa-upload"></i> 上架商品</button>
+                </div>
+                <div class="admin-card" style="border-left:4px solid #f59e0b;">
+                    <div class="admin-card-title"><i class="fas fa-paper-plane" style="color:#f59e0b;"></i> 直接发布订单</div>
+                    <p style="font-size:13px;color:#8892a8;margin-bottom:12px;">无需老板购买，直接创建订单，打手可接单。</p>
+                    <div class="admin-form-group"><label><i class="fas fa-gamepad"></i> 游戏</label><select class="admin-form-control" id="directGame"><option value="暗区突围">暗区突围</option><option value="三角洲">三角洲</option></select></div>
+                    <div class="admin-form-group"><label><i class="fas fa-tag"></i> 标题</label><input class="admin-form-control" id="directTitle" placeholder="如：大师护航"></div>
+                    <div class="admin-form-group"><label><i class="fas fa-align-left"></i> 描述</label><textarea class="admin-form-control" id="directDesc" rows="2" placeholder="服务详情"></textarea></div>
+                    <div class="admin-form-group"><label><i class="fas fa-yen-sign"></i> 价格</label><input class="admin-form-control" id="directPrice" type="number" placeholder="288"></div>
+                    <button class="btn btn-warning btn-block" onclick="directPublishOrder()"><i class="fas fa-paper-plane"></i> 发布订单</button>
+                </div>
+            </div>
+            <div class="tab-page" id="tab-orders">
+                <div class="admin-card"><div class="admin-card-title"><i class="fas fa-filter"></i> 所有订单</div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                        <select class="admin-form-control" id="filterOrderStatus" style="width:140px;padding:6px 12px;" onchange="renderAdminOrders()">
+                            <option value="all">全部</option><option value="pending">待接单</option><option value="ongoing">进行中</option><option value="review">待验收</option><option value="completed">已完成</option><option value="canceled">已取消</option><option value="rejected">已驳回</option><option value="refund_pending">退款申请</option><option value="refunded">已退款</option>
+                        </select>
+                        <button class="btn btn-outline btn-sm" onclick="renderAdminOrders()"><i class="fas fa-sync"></i> 刷新</button>
+                    </div>
+                    <div id="adminOrdersList"></div>
+                </div>
+            </div>
+            <div class="tab-page" id="tab-recharges">
+                <div class="admin-card"><div class="admin-card-title"><i class="fas fa-coins"></i> 充值申请</div><div id="rechargeList"></div></div>
+                <div class="admin-card"><div class="admin-card-title"><i class="fas fa-gift"></i> 赠送红钻</div>
+                    <div class="admin-form-group"><label>选择老板</label><select class="admin-form-control" id="giftUser"></select></div>
+                    <div class="admin-form-group"><label>红钻数量</label><input class="admin-form-control" id="giftAmount" type="number" placeholder="数量"></div>
+                    <button class="btn btn-primary" onclick="sendGift()"><i class="fas fa-gift"></i> 赠送</button>
+                </div>
+            </div>
+            <div class="tab-page" id="tab-users">
+                <div class="admin-card"><div class="admin-card-title"><i class="fas fa-user-tie"></i> 用户管理</div>
+                    <div style="margin-bottom:12px;"><div class="admin-form-group"><label>搜索用户</label><input class="admin-form-control" id="searchUser" placeholder="输入用户名搜索" oninput="renderUsers()"></div></div>
+                    <div id="usersList"></div>
+                </div>
+            </div>
+            <div class="tab-page" id="tab-announce">
+                <div class="admin-card">
+                    <div class="admin-card-title"><i class="fas fa-bullhorn"></i> 公告编辑</div>
+                    <div class="announce-editor">
+                        <div class="admin-form-group"><label>公告内容</label><textarea id="announceEditContent" rows="3" placeholder="输入公告内容..."></textarea></div>
+                        <div class="admin-form-group"><label>上传图片</label>
+                            <div class="image-upload"><input type="file" id="announceImageInput" accept="image/*" multiple onchange="previewAnnounceImages(event)"></div>
+                            <div class="preview-images" id="announceImagePreview"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveAnnounce()"><i class="fas fa-save"></i> 保存公告</button>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-card-title"><i class="fas fa-eye"></i> 当前公告预览</div>
+                    <div id="announcePreview" style="color:#b0b8c8;font-size:14px;line-height:1.6;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 账号管理视图 -->
+        <div class="role-view" id="view-account">
+            <div class="card">
+                <div class="card-title"><i class="fas fa-user"></i> 账号信息</div>
+                <div id="accountInfo" class="account-info">
+                    <div class="info-row"><span class="label">用户名</span><span class="value" id="accUsername">-</span></div>
+                    <div class="info-row"><span class="label">角色</span><span class="value" id="accRole">-</span></div>
+                    <div class="info-row"><span class="label">状态</span><span class="value" id="accStatus">-</span></div>
+                    <div class="info-row" id="accDiamondRow"><span class="label">红钻</span><span class="value" id="accDiamond">0</span></div>
+                    <div class="info-row" id="accBalanceRow"><span class="label">余额</span><span class="value" id="accBalance">¥0</span></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <button class="nav-item active" data-target="home" id="navHome"><i class="fas fa-home"></i><span>首页</span></button>
+        <button class="nav-item" data-target="boss" id="navBoss"><i class="fas fa-shopping-cart"></i><span>商城</span></button>
+        <button class="nav-item" data-target="handler" id="navHandler"><i class="fas fa-gamepad"></i><span>打手</span></button>
+        <button class="nav-item" data-target="admin" id="navAdmin"><i class="fas fa-user-cog"></i><span>管理</span></button>
+        <button class="nav-item" data-target="account" id="navAccount"><i class="fas fa-user"></i><span>我的</span></button>
+    </div>
+</div>
+
+<!-- 模态框 -->
+<div class="modal-overlay" id="customModal"><div class="modal-box" id="customModalContent"></div></div>
+<div id="toast" class="toast"></div>
+
 <script>
 // ============================================================
 //  配置
@@ -22,7 +355,7 @@ let token = localStorage.getItem('token');
 let announceImages = [];
 
 // ============================================================
-//  工具函数（保持不变）
+//  工具函数
 // ============================================================
 function toast(msg, type) {
     const t = document.getElementById('toast');
@@ -89,7 +422,7 @@ function updateRoleBasedUI() {
 }
 
 // ============================================================
-//  公告功能（保持不变）
+//  公告功能
 // ============================================================
 async function loadAnnounce() {
     try {
@@ -155,7 +488,7 @@ async function saveAnnounce() {
 }
 
 // ============================================================
-//  认证模块（保持不变）
+//  认证模块
 // ============================================================
 async function doAuthLogin() {
     const username = document.getElementById('authUsername').value.trim();
@@ -235,7 +568,7 @@ function updateAccountInfo() {
 }
 
 // ============================================================
-//  导航切换（保持不变）
+//  导航切换
 // ============================================================
 document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
     item.addEventListener('click', function() {
@@ -275,7 +608,7 @@ document.querySelectorAll('.entry-card[data-target]').forEach(card => {
 });
 
 // ============================================================
-//  管理员渲染（保持不变）
+//  管理员渲染
 // ============================================================
 document.querySelectorAll('.tab-nav button').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -411,48 +744,33 @@ async function shelfProduct() {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// ============================================================
-//  直接发布订单（修复版）
-// ============================================================
+// ===== 直接发布订单 =====
 window.directPublishOrder = function() {
     const game = document.getElementById('directGame').value;
     const title = document.getElementById('directTitle').value.trim();
     const desc = document.getElementById('directDesc').value.trim();
     const price = parseFloat(document.getElementById('directPrice').value);
     if (!title || !price) return toast('请填写完整信息', 'error');
-    showCustomModal(`
-        <h3><i class="fas fa-paper-plane"></i> 发布订单</h3>
-        <p style="color:#8892a8;font-size:14px;">确认发布订单「${title}」到打手页面？</p>
-        <div style="font-size:13px;color:#8892a8;margin-bottom:12px;">老板ID（留空则使用管理员）：<br><input class="admin-form-control" id="directBossId" placeholder="输入老板ID（可选）" style="margin-top:6px;"></div>
-        <div class="btn-row">
-            <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
-            <button class="btn btn-success" onclick="doDirectPublish('${game}', '${title}', '${desc}', ${price})">确认发布</button>
-        </div>
-    `);
+    confirmAction('确认发布', `确认发布订单「${title}」到打手页面？`, '确认发布', `doDirectPublish('${game}', '${title}', '${desc}', ${price})`);
 };
 
 async function doDirectPublish(game, title, desc, price) {
-    const bossId = document.getElementById('directBossId')?.value.trim() || '';
-    closeCustomModal();
     try {
-        const data = await apiRequest('/admin/orders/direct', {
+        await apiRequest('/admin/orders/direct', {
             method: 'POST',
-            body: JSON.stringify({ game, title, desc, price, bossId })
+            body: JSON.stringify({ game, title, desc, price })
         });
         toast('✅ 订单已发布，打手可接单', 'success');
         document.getElementById('directTitle').value = '';
         document.getElementById('directDesc').value = '';
         document.getElementById('directPrice').value = '';
         renderAdminOrders();
-        renderHandlerView();
     } catch (err) {
         toast(err.message, 'error');
     }
 }
 
-// ============================================================
-//  订单管理（管理员）
-// ============================================================
+// ===== 订单管理（管理员） =====
 async function renderAdminOrders() {
     try {
         const orders = await apiRequest('/admin/orders');
@@ -493,6 +811,7 @@ async function renderAdminOrders() {
     } catch (err) { console.error(err); }
 }
 
+// 管理员指派打手
 window.adminAssignHandler = function(orderId) {
     const handlerId = prompt('请输入打手ID：');
     if (!handlerId) return;
@@ -501,6 +820,7 @@ window.adminAssignHandler = function(orderId) {
         .catch(err => toast(err.message, 'error'));
 };
 
+// 管理员强制完成
 window.adminForceComplete = function(orderId) {
     confirmAction('确认强制完成', '确认强制完成此订单？', '确认强制完成', `doForceComplete('${orderId}')`);
 };
@@ -512,6 +832,7 @@ async function doForceComplete(orderId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
+// 管理员确认完成
 window.adminConfirmComplete = function(orderId) {
     confirmAction('确认验收通过', '确认此订单验收通过？', '确认通过', `doConfirmComplete('${orderId}')`);
 };
@@ -523,6 +844,7 @@ async function doConfirmComplete(orderId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
+// 管理员驳回
 window.adminRejectOrder = function(orderId) {
     const reason = prompt('请输入驳回原因：');
     if (reason === null) return;
@@ -531,6 +853,7 @@ window.adminRejectOrder = function(orderId) {
         .catch(err => toast(err.message, 'error'));
 };
 
+// 管理员取消订单
 window.adminCancelOrder = function(orderId) {
     confirmAction('确认取消', '确认取消此订单？', '确认取消', `doCancelOrder('${orderId}')`);
 };
@@ -542,6 +865,7 @@ async function doCancelOrder(orderId) {
     } catch (err) { toast(err.message, 'error'); }
 };
 
+// 管理员结算（自定义金额）
 window.adminSettleOrder = function(orderId) {
     showCustomModal(`
         <h3><i class="fas fa-coins"></i> 结算打手</h3>
@@ -570,6 +894,7 @@ async function doSettleOrder(orderId) {
     }
 }
 
+// 管理员处理退款 - 通过
 window.adminRefundApprove = function(orderId) {
     confirmAction('确认通过退款', '确认通过此退款申请？红钻将返还给老板。', '确认通过', `doRefundApprove('${orderId}')`);
 };
@@ -584,6 +909,7 @@ async function doRefundApprove(orderId) {
     }
 }
 
+// 管理员处理退款 - 拒绝
 window.adminRefundReject = function(orderId) {
     const reason = prompt('请输入拒绝原因：');
     if (reason === null) return;
@@ -596,9 +922,7 @@ window.adminRefundReject = function(orderId) {
         .catch(err => toast(err.message, 'error'));
 };
 
-// ============================================================
-//  充值管理（保持不变）
-// ============================================================
+// ===== 充值管理 =====
 async function renderRecharges() {
     try {
         const recharges = await apiRequest('/admin/recharges');
@@ -684,9 +1008,7 @@ window.sendGift = function() {
         .catch(err => toast(err.message, 'error'));
 };
 
-// ============================================================
-//  用户管理（保持不变）
-// ============================================================
+// ===== 用户管理 =====
 async function renderUsers() {
     try {
         const search = document.getElementById('searchUser')?.value.toLowerCase() || '';
@@ -736,7 +1058,7 @@ async function doResetPassword(userId) {
 }
 
 // ============================================================
-//  老板视图（修复购买后订单不显示）
+//  老板视图
 // ============================================================
 async function renderBossView() {
     try {
@@ -820,15 +1142,12 @@ window.viewOrderDetail = function(orderId) {
 window.confirmBuy = function(productId) {
     confirmAction('确认购买', '确认购买此商品？将扣除对应红钻。', '确认购买', `doBuy('${productId}')`);
 };
-
 async function doBuy(productId) {
     try {
         const data = await apiRequest('/orders/buy', { method: 'POST', body: JSON.stringify({ productId }) });
-        toast('✅ 购买成功！订单号：' + data.orderId, 'success');
-        // 强制刷新所有视图
-        await renderBossView();
-        await renderHandlerView();
-        await renderAdminOrders();
+        toast('购买成功！订单号：' + data.orderId, 'success');
+        renderBossView();
+        renderHandlerView();
     } catch (err) {
         toast(err.message, 'error');
     }
@@ -843,7 +1162,6 @@ async function doBossComplete(orderId) {
         toast('已确认完成，等待管理员结算', 'success');
         renderBossView();
         renderHandlerView();
-        renderAdminOrders();
     } catch (err) {
         toast(err.message, 'error');
     }
@@ -877,7 +1195,7 @@ async function doRequestRefund(orderId) {
 }
 
 // ============================================================
-//  打手视图（保持不变）
+//  打手视图
 // ============================================================
 async function renderHandlerView() {
     try {
