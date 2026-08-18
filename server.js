@@ -143,15 +143,19 @@ app.post('/api/admin/products', verifyToken, async (req, res) => {
   res.json(product);
 });
 
-// 商品下架（核心功能）
+// 商品下架
 app.put('/api/admin/products/:id/unshelf', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const product = await Product.findById(req.params.id);
-  if (!product) return res.status(404).json({ error: '商品不存在' });
-  product.hidden = true;
-  await product.save();
-  res.json({ message: '商品已下架' });
+  try {
+    const user = await User.findById(req.userId);
+    if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: '商品不存在' });
+    product.hidden = true;
+    await product.save();
+    res.json({ success: true, message: '商品已下架' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ========== 订单 API ==========
@@ -198,7 +202,6 @@ app.get('/api/admin/orders', verifyToken, async (req, res) => {
   res.json(orders);
 });
 
-// 管理员指派打手
 app.put('/api/admin/orders/:id/assign', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -214,7 +217,6 @@ app.put('/api/admin/orders/:id/assign', verifyToken, async (req, res) => {
   res.json({ message: '指派成功' });
 });
 
-// 管理员强制完成
 app.put('/api/admin/orders/:id/force-complete', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -226,7 +228,6 @@ app.put('/api/admin/orders/:id/force-complete', verifyToken, async (req, res) =>
   res.json({ message: '强制完成成功' });
 });
 
-// 管理员确认完成（验收通过）
 app.put('/api/admin/orders/:id/confirm', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -238,7 +239,6 @@ app.put('/api/admin/orders/:id/confirm', verifyToken, async (req, res) => {
   res.json({ message: '验收通过' });
 });
 
-// 管理员驳回订单
 app.put('/api/admin/orders/:id/reject', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -251,7 +251,6 @@ app.put('/api/admin/orders/:id/reject', verifyToken, async (req, res) => {
   res.json({ message: '已驳回' });
 });
 
-// 管理员取消订单
 app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -259,7 +258,6 @@ app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   if (!order) return res.status(404).json({ error: '订单不存在' });
   order.status = 'canceled';
   await order.save();
-  // 退还红钻
   const boss = await User.findById(order.bossId);
   if (boss) {
     boss.diamond += order.price * 10;
@@ -268,7 +266,6 @@ app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   res.json({ message: '订单已取消' });
 });
 
-// 管理员结算打手收入
 app.put('/api/admin/orders/:id/settle', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -299,39 +296,45 @@ app.get('/api/admin/recharges', verifyToken, async (req, res) => {
   res.json(recharges);
 });
 
-// 充值审核通过 - 红钻直接到账（核心功能）
+// 充值审核通过（核心功能）
 app.put('/api/admin/recharges/:id/approve', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const recharge = await Recharge.findById(req.params.id);
-  if (!recharge) return res.status(404).json({ error: '记录不存在' });
-  if (recharge.status !== 'pending') return res.status(400).json({ error: '已处理' });
-  // 更新状态
-  recharge.status = 'approved';
-  recharge.approveTime = new Date();
-  await recharge.save();
-  // 红钻直接到账
-  const targetUser = await User.findById(recharge.userId);
-  if (targetUser) {
-    targetUser.diamond = (targetUser.diamond || 0) + recharge.diamond;
-    await targetUser.save();
+  try {
+    const user = await User.findById(req.userId);
+    if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+    const recharge = await Recharge.findById(req.params.id);
+    if (!recharge) return res.status(404).json({ error: '记录不存在' });
+    if (recharge.status !== 'pending') return res.status(400).json({ error: '已处理' });
+    recharge.status = 'approved';
+    recharge.approveTime = new Date();
+    await recharge.save();
+    const targetUser = await User.findById(recharge.userId);
+    if (targetUser) {
+      targetUser.diamond = (targetUser.diamond || 0) + recharge.diamond;
+      await targetUser.save();
+    }
+    res.json({ success: true, message: '审核通过，红钻已到账' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  res.json({ message: '审核通过，红钻已到账' });
 });
 
 // 充值审核拒绝
 app.put('/api/admin/recharges/:id/reject', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const recharge = await Recharge.findById(req.params.id);
-  if (!recharge) return res.status(404).json({ error: '记录不存在' });
-  recharge.status = 'rejected';
-  recharge.approveTime = new Date();
-  await recharge.save();
-  res.json({ message: '已拒绝' });
+  try {
+    const user = await User.findById(req.userId);
+    if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+    const recharge = await Recharge.findById(req.params.id);
+    if (!recharge) return res.status(404).json({ error: '记录不存在' });
+    recharge.status = 'rejected';
+    recharge.approveTime = new Date();
+    await recharge.save();
+    res.json({ success: true, message: '已拒绝' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// ========== 打手接单 ==========
+// ========== 打手 API ==========
 app.put('/api/orders/:id/take', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'handler') return res.status(403).json({ error: '只有打手可接单' });
@@ -346,7 +349,6 @@ app.put('/api/orders/:id/take', verifyToken, async (req, res) => {
   res.json({ message: '接单成功' });
 });
 
-// 打手提交完成
 app.put('/api/orders/:id/submit-complete', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'handler') return res.status(403).json({ error: '只有打手可操作' });
@@ -359,7 +361,6 @@ app.put('/api/orders/:id/submit-complete', verifyToken, async (req, res) => {
   res.json({ message: '已提交验收' });
 });
 
-// 老板确认完成
 app.put('/api/orders/:id/boss-confirm', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'boss') return res.status(403).json({ error: '只有老板可操作' });
@@ -373,12 +374,11 @@ app.put('/api/orders/:id/boss-confirm', verifyToken, async (req, res) => {
   res.json({ message: '已确认完成，等待管理员结算' });
 });
 
-// ========== 聊天功能 ==========
+// ========== 聊天 ==========
 app.post('/api/orders/:id/chat', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   const order = await Order.findById(req.params.id);
   if (!order) return res.status(404).json({ error: '订单不存在' });
-  // 验证用户是否有权限（老板或打手）
   if (order.bossId.toString() !== user._id.toString() && order.handlerId && order.handlerId.toString() !== user._id.toString()) {
     return res.status(403).json({ error: '无权操作' });
   }
