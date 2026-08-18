@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://mffttttt0705_db_user:AwkCQgIpWJIyoKEC@cluster0.lpunuuy.mongodb.net/?appName=Cluster0', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://mffttttt0705_db_user:LZQ704525@cluster0.lpunuuy.mongodb.net/?appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
