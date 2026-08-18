@@ -13,7 +13,6 @@
         .view{display:none;animation:fadeUp 0.3s ease}
         .view.active{display:block}
         @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-
         .app-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;border-bottom:1px solid rgba(100,200,255,0.06);margin-bottom:20px}
         .brand{display:flex;align-items:center;gap:10px}
         .brand-icon{width:40px;height:40px;background:linear-gradient(145deg,#00c8ff,#0055ff);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;box-shadow:0 0 20px rgba(0,150,255,0.3)}
@@ -21,20 +20,17 @@
         .brand-name small{font-weight:300;font-size:13px;-webkit-text-fill-color:rgba(180,210,255,0.6);color:rgba(180,210,255,0.6)}
         .header-right{font-size:13px;color:#7a8faf;display:flex;align-items:center;gap:6px}
         .header-right i{color:#3a7eff}
-
         .announcement{background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.15);border-radius:16px;padding:14px 16px;margin-bottom:16px}
         .announcement .content{font-size:14px;color:#d0e4ff;line-height:1.6}
         .announcement .images{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
         .announcement .images img{max-width:100px;max-height:100px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
         .announcement .time{font-size:11px;color:#5a6378;margin-top:6px}
-
         .announce-editor textarea{width:100%;background:#0b0d10;border:1px solid #2a2f3a;border-radius:12px;padding:10px 14px;color:#e8e6e3;font-size:14px;outline:none;resize:vertical;min-height:80px}
         .announce-editor textarea:focus{border-color:#f5c842}
         .announce-editor .image-upload{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
         .announce-editor .image-upload input[type="file"]{background:#0b0d10;border:1px solid #2a2f3a;border-radius:12px;padding:6px 12px;color:#e8e6e3;font-size:13px;max-width:200px}
         .announce-editor .preview-images{display:flex;gap:8px;flex-wrap:wrap}
         .announce-editor .preview-images img{max-width:60px;max-height:60px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
-
         .entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0 16px}
         .entry-card{background:rgba(18,24,42,0.7);border-radius:24px;padding:22px 12px 18px;text-align:center;border:1px solid rgba(70,150,255,0.06);box-shadow:0 8px 24px rgba(0,0,0,0.3);cursor:pointer;transition:all 0.25s}
         .entry-card:active{transform:scale(0.95)}
@@ -42,16 +38,13 @@
         .entry-title{font-size:16px;font-weight:600;color:#e4edff}
         .entry-sub{font-size:12px;color:#7a8faf}
         .entry-badge{display:inline-block;margin-top:10px;padding:3px 12px;background:rgba(60,160,255,0.08);border-radius:30px;font-size:10px;color:#6a9fd6;border:1px solid rgba(60,160,255,0.06)}
-
         .section-title{font-size:18px;font-weight:600;color:#d0e4ff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
         .section-title i{color:#3a7eff}
-
         .list-item{background:rgba(18,24,42,0.5);border-radius:20px;padding:16px 18px;margin-bottom:12px;border:1px solid rgba(70,150,255,0.04);display:flex;justify-content:space-between;align-items:center}
         .list-item .left .name{font-weight:500;color:#e4edff;font-size:15px}
         .list-item .left .desc{font-size:12px;color:#7a8faf}
         .list-item .right .price{font-weight:600;color:#69db7c;font-size:16px}
         .list-item .right .tag{font-size:11px;background:rgba(60,160,255,0.1);padding:2px 12px;border-radius:30px;color:#6ab0ff}
-
         .btn-primary{background:linear-gradient(145deg,#1a6aff,#0044cc);border:none;color:#fff;padding:8px 20px;border-radius:40px;font-weight:500;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(0,80,255,0.2)}
         .btn-primary:active{transform:scale(0.96)}
         .btn-outline{background:transparent;border:1px solid rgba(60,160,255,0.2);color:#b0c8e6;padding:8px 20px;border-radius:40px;font-size:13px;cursor:pointer}
@@ -60,13 +53,12 @@
         .btn-warning{background:#f59e0b;color:#0b0d10;border:none;padding:6px 16px;border-radius:30px;font-size:12px;cursor:pointer}
         .btn-sm{padding:4px 14px;font-size:12px}
         .btn-xs{padding:2px 10px;font-size:11px}
-
         .bottom-nav{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;background:rgba(10,14,26,0.85);backdrop-filter:blur(16px);padding:8px 0 12px;border-top:1px solid rgba(100,200,255,0.06);border-radius:0 0 40px 40px}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:#5a6f8f;font-size:11px;cursor:pointer;padding:4px 12px;border-radius:30px;background:transparent;border:none;font-family:inherit}
         .nav-item i{font-size:20px}
         .nav-item.active{color:#b8dcff}
         .nav-item.active i{color:#3a7eff;text-shadow:0 0 20px rgba(0,80,255,0.3)}
-
+        .nav-item.hidden-nav{display:none!important}
         .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);justify-content:center;align-items:center;z-index:999}
         .modal-overlay.active{display:flex}
         .modal-box{background:rgba(18,26,48,0.95);border:1px solid rgba(60,160,255,0.15);border-radius:32px;padding:32px 28px;max-width:380px;width:90%;text-align:center;animation:fadeUp 0.25s ease;max-height:90vh;overflow-y:auto}
@@ -78,12 +70,10 @@
         .modal-box .form-group label{display:block;font-size:13px;color:#b0b8c8;margin-bottom:4px}
         .modal-box .form-group input,.modal-box .form-group select{width:100%;background:#0b0d10;border:1px solid #2a2f3a;border-radius:12px;padding:10px 14px;color:#e8e6e3;font-size:14px;outline:none}
         .modal-box .form-group input:focus,.modal-box .form-group select:focus{border-color:#f5c842}
-
         .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#1f2630;padding:12px 28px;border-radius:40px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.6);border-left:4px solid #22c55e;color:#e8e6e3;font-size:14px;display:none;max-width:90%;text-align:center}
         .toast.show{display:block;animation:fadeUp 0.3s ease}
         .toast.error{border-left-color:#ef4444}
         .toast.warning{border-left-color:#f59e0b}
-
         .status-badge{font-size:11px;padding:2px 12px;border-radius:30px;display:inline-block;font-weight:500}
         .status-pending{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
         .status-ongoing{background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644}
@@ -94,17 +84,13 @@
         .status-onsale{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
         .status-soldout{background:#6b728022;color:#9ca3af;border:1px solid #6b728044}
         .status-hidden{background:#6b728022;color:#6b7280;border:1px solid #6b728044}
-
         .empty-state{text-align:center;padding:40px 20px;color:#5a6378}
         .empty-state i{font-size:44px;opacity:0.4;display:block;margin-bottom:12px}
         .empty-state p{font-size:15px}
-
         .promo-badge{display:inline-block;background:#f5c84222;color:#f5c842;border:1px solid #f5c84244;border-radius:30px;padding:2px 12px;font-size:11px;margin-right:6px}
-
         .role-view{display:none}
         .role-view.active{display:block}
         .hidden{display:none!important}
-
         .admin-card{background:rgba(18,24,42,0.5);border-radius:20px;padding:18px 16px;margin-bottom:16px;border:1px solid rgba(70,150,255,0.04)}
         .admin-card-title{font-size:16px;font-weight:600;margin-bottom:12px;color:#d0e4ff;display:flex;align-items:center;gap:8px}
         .admin-card-title i{color:#f5c842}
@@ -127,7 +113,6 @@
         thead{border-bottom:2px solid #2a2f3a}
         th{padding:10px 8px;text-align:left;font-weight:600;color:#8892a8;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;white-space:nowrap}
         td{padding:10px 8px;border-bottom:1px solid #1f2630;vertical-align:middle}
-
         .chat-messages{max-height:300px;overflow-y:auto;padding:8px 0;border-top:1px solid #2a2f3a;border-bottom:1px solid #2a2f3a;margin:8px 0}
         .chat-msg{padding:6px 10px;margin:4px 0;border-radius:12px;max-width:85%;word-break:break-word}
         .chat-msg.boss{background:#1a2a4a;color:#b0c8e6;align-self:flex-start}
@@ -139,20 +124,16 @@
         .chat-input-area input:focus{border-color:#f5c842}
         .chat-readonly{opacity:0.6}
         .chat-readonly .chat-input-area input{pointer-events:none}
-
         .recharge-option{display:inline-block;padding:8px 16px;margin:4px;border:1px solid #2a2f3a;border-radius:12px;cursor:pointer;transition:0.2s}
         .recharge-option:hover{border-color:#f5c842;background:#1f2630}
         .recharge-option.selected{border-color:#f5c842;background:#f5c84222}
-
         .mail-item{padding:10px;border-bottom:1px solid #1f2630}
         .mail-item .mail-title{font-weight:600}
         .mail-item .mail-time{font-size:12px;color:#8892a8}
-
         .account-info{display:flex;flex-direction:column;gap:8px}
         .account-info .info-row{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(0,0,0,0.2);border-radius:12px}
         .account-info .info-row .label{color:#8892a8}
         .account-info .info-row .value{color:#e8e6e3;font-weight:500}
-
         #authPage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:700px;padding:20px;text-align:center}
         #authPage .logo{font-size:32px;font-weight:700;background:linear-gradient(135deg,#f5c842,#dbaa2a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
         #authPage .logo i{font-size:40px;color:#f5c842;-webkit-text-fill-color:#f5c842;margin-right:10px}
@@ -165,21 +146,8 @@
         #authPage .auth-box .role-row{display:flex;gap:12px;justify-content:center;font-size:13px;color:#8892a8}
         #authPage .auth-box .role-row label{display:flex;align-items:center;gap:4px;cursor:pointer}
         #authPage .auth-box .auth-error{color:#ef4444;font-size:13px;min-height:20px}
-
-        .nav-item.hidden-nav{display:none!important}
-
-        @media(max-width:420px){
-            .app-wrapper{border-radius:28px;padding-bottom:66px}
-            .view-container{padding:16px 14px}
-            .entry-grid{gap:12px}
-            .entry-card{padding:18px 8px}
-            .entry-icon{width:48px;height:48px;font-size:22px}
-            .entry-title{font-size:14px}
-            .bottom-nav{padding:6px 0 10px}
-            .nav-item i{font-size:18px}
-            .nav-item span{font-size:10px}
-            #authPage{min-height:600px}
-        }
+        .btn-block{width:100%;justify-content:center}
+        @media(max-width:420px){.app-wrapper{border-radius:28px;padding-bottom:66px}.view-container{padding:16px 14px}.entry-grid{gap:12px}.entry-card{padding:18px 8px}.entry-icon{width:48px;height:48px;font-size:22px}.entry-title{font-size:14px}.bottom-nav{padding:6px 0 10px}.nav-item i{font-size:18px}.nav-item span{font-size:10px}#authPage{min-height:600px}}
     </style>
 </head>
 <body>
@@ -287,6 +255,16 @@
                     <div class="admin-form-group"><label><i class="fas fa-yen-sign"></i> 价格</label><input class="admin-form-control" id="prodPrice" type="number" placeholder="288"></div>
                     <div class="admin-form-group"><label><i class="fas fa-boxes"></i> 库存</label><input class="admin-form-control" id="prodQuantity" type="number" placeholder="1" value="1"></div>
                     <button class="btn btn-success" onclick="shelfProduct()"><i class="fas fa-upload"></i> 上架商品</button>
+                </div>
+                <!-- 直接发布订单到打手页面 -->
+                <div class="admin-card" style="border-left:4px solid #f59e0b;">
+                    <div class="admin-card-title"><i class="fas fa-paper-plane" style="color:#f59e0b;"></i> 直接发布订单（到打手页面）</div>
+                    <p style="font-size:13px;color:#8892a8;margin-bottom:12px;">无需老板购买，直接创建订单，打手可接单。</p>
+                    <div class="admin-form-group"><label><i class="fas fa-gamepad"></i> 游戏</label><select class="admin-form-control" id="directGame"><option value="暗区突围">暗区突围</option><option value="三角洲">三角洲</option></select></div>
+                    <div class="admin-form-group"><label><i class="fas fa-tag"></i> 标题</label><input class="admin-form-control" id="directTitle" placeholder="如：大师护航"></div>
+                    <div class="admin-form-group"><label><i class="fas fa-align-left"></i> 描述</label><textarea class="admin-form-control" id="directDesc" rows="2" placeholder="服务详情"></textarea></div>
+                    <div class="admin-form-group"><label><i class="fas fa-yen-sign"></i> 价格</label><input class="admin-form-control" id="directPrice" type="number" placeholder="288"></div>
+                    <button class="btn btn-warning btn-block" onclick="directPublishOrder()"><i class="fas fa-paper-plane"></i> 发布订单（待接单）</button>
                 </div>
             </div>
             <div class="tab-page" id="tab-orders">
@@ -423,23 +401,18 @@ function confirmAction(title, message, confirmText, callback) {
     `);
 }
 
-// 获取当前用户角色，显示/隐藏导航和卡片
 function updateRoleBasedUI() {
     if (!currentUser) return;
     const role = currentUser.role;
-    
-    // 首页卡片
     document.getElementById('cardBoss').style.display = (role === 'boss' || role === 'admin') ? 'block' : 'none';
     document.getElementById('cardHandler').style.display = (role === 'handler' || role === 'admin') ? 'block' : 'none';
     document.getElementById('cardAdmin').style.display = (role === 'admin') ? 'block' : 'none';
-    document.getElementById('cardAccount').style.display = 'block'; // 所有人都能看到
-    
-    // 底部导航
+    document.getElementById('cardAccount').style.display = 'block';
     document.getElementById('navBoss').style.display = (role === 'boss' || role === 'admin') ? 'flex' : 'none';
     document.getElementById('navHandler').style.display = (role === 'handler' || role === 'admin') ? 'flex' : 'none';
     document.getElementById('navAdmin').style.display = (role === 'admin') ? 'flex' : 'none';
-    document.getElementById('navAccount').style.display = 'flex'; // 所有人都能看到
-    document.getElementById('navHome').style.display = 'flex'; // 所有人都能看到首页
+    document.getElementById('navAccount').style.display = 'flex';
+    document.getElementById('navHome').style.display = 'flex';
 }
 
 // ============================================================
@@ -465,9 +438,7 @@ async function loadAnnounce() {
         announceImages = data.images || [];
         renderAnnounceImagePreview();
         document.getElementById('announcePreview').innerHTML = (data.content || '') + (data.images && data.images.length > 0 ? '<br><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">' + data.images.map(img => '<img src="'+img+'" style="max-width:80px;max-height:80px;border-radius:8px;">').join('') + '</div>' : '');
-    } catch (err) {
-        console.error('加载公告失败', err);
-    }
+    } catch (err) { console.error('加载公告失败', err); }
 }
 
 function previewAnnounceImages(event) {
@@ -505,9 +476,7 @@ async function saveAnnounce() {
         await apiRequest('/admin/announce', { method: 'PUT', body: JSON.stringify({ content, images: announceImages }) });
         toast('公告已更新', 'success');
         loadAnnounce();
-    } catch (err) {
-        toast(err.message, 'error');
-    }
+    } catch (err) { toast(err.message, 'error'); }
 }
 
 // ============================================================
@@ -534,10 +503,7 @@ async function doAuthLogin() {
         document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById('view-home').classList.add('active');
         document.querySelector('.bottom-nav .nav-item[data-target="home"]').classList.add('active');
-        
-        // 根据角色更新UI
         updateRoleBasedUI();
-        
         loadAnnounce();
         updateAccountInfo();
         document.getElementById('authUsername').value = '';
@@ -582,9 +548,6 @@ function doLogout() {
     toast('已退出', 'warning');
 }
 
-// ============================================================
-//  账号信息
-// ============================================================
 function updateAccountInfo() {
     if (!currentUser) return;
     document.getElementById('accUsername').textContent = currentUser.username;
@@ -603,7 +566,6 @@ document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
     item.addEventListener('click', function() {
         if (!currentUser) return toast('请先登录', 'warning');
         const target = this.dataset.target;
-        // 检查该导航是否对当前角色可见
         if (this.style.display === 'none') return;
         document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
         this.classList.add('active');
@@ -630,7 +592,6 @@ document.querySelectorAll('.entry-card[data-target]').forEach(card => {
     card.addEventListener('click', function() {
         if (!currentUser) return toast('请先登录', 'warning');
         const target = this.dataset.target;
-        // 检查卡片是否可见
         if (this.style.display === 'none') return;
         document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
         const navItem = document.querySelector(`.bottom-nav .nav-item[data-target="${target}"]`);
@@ -686,7 +647,7 @@ async function renderDashboard() {
     } catch (err) { console.error(err); }
 }
 
-// ===== 商品管理（含重新上架和删除） =====
+// ===== 商品管理 =====
 async function renderProducts() {
     try {
         const products = await apiRequest('/admin/products');
@@ -696,7 +657,7 @@ async function renderProducts() {
             return;
         }
         let html = '<div class="table-wrap"><table><thead><tr><th>标题</th><th>价格</th><th>库存</th><th>状态</th><th>操作</th></tr></thead><tbody>';
-        products.forEach(p => {
+        for (const p of products) {
             const remaining = p.quantity - p.sold;
             const isHidden = p.hidden === true;
             let statusText2 = isHidden ? '已下架' : (remaining > 0 ? '在售' : '已售罄');
@@ -716,7 +677,7 @@ async function renderProducts() {
                 <td><span class="status-badge ${statusCls}">${statusText2}</span></td>
                 <td><div class="action-group">${actions}</div></td>
             </tr>`;
-        });
+        }
         html += '</tbody></table></div>';
         container.innerHTML = html;
     } catch (err) { console.error(err); }
@@ -773,6 +734,32 @@ async function shelfProduct() {
         document.getElementById('prodPrice').value = '';
         renderProducts();
     } catch (err) { toast(err.message, 'error'); }
+}
+
+// ===== 直接发布订单到打手页面 =====
+window.directPublishOrder = function() {
+    const game = document.getElementById('directGame').value;
+    const title = document.getElementById('directTitle').value.trim();
+    const desc = document.getElementById('directDesc').value.trim();
+    const price = parseFloat(document.getElementById('directPrice').value);
+    if (!title || !price) return toast('请填写完整信息', 'error');
+    confirmAction('确认发布', `确认发布订单「${title}」到打手页面？`, '确认发布', `doDirectPublish('${game}', '${title}', '${desc}', ${price})`);
+};
+
+async function doDirectPublish(game, title, desc, price) {
+    try {
+        await apiRequest('/admin/orders/direct', {
+            method: 'POST',
+            body: JSON.stringify({ game, title, desc, price })
+        });
+        toast('✅ 订单已发布，打手可接单', 'success');
+        document.getElementById('directTitle').value = '';
+        document.getElementById('directDesc').value = '';
+        document.getElementById('directPrice').value = '';
+        renderAdminOrders();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
 }
 
 // ===== 订单管理 =====
@@ -861,7 +848,7 @@ window.adminSettleOrder = function(orderId) {
         .catch(err => toast(err.message, 'error'));
 };
 
-// ===== 充值管理（修复 ObjectId 问题） =====
+// ===== 充值管理 =====
 async function renderRecharges() {
     try {
         const recharges = await apiRequest('/admin/recharges');
@@ -871,7 +858,7 @@ async function renderRecharges() {
             return;
         }
         let html = '<div class="table-wrap"><table><thead><tr><th>用户</th><th>金额</th><th>红钻</th><th>状态</th><th>操作</th></tr></thead><tbody>';
-        recharges.forEach(r => {
+        for (const r of recharges) {
             const userId = r.userId || '';
             const statusText2 = r.status === 'pending' ? '待审核' : r.status === 'approved' ? '已通过' : '已拒绝';
             const statusCls = r.status === 'pending' ? 'status-pending' : r.status === 'approved' ? 'status-onsale' : 'status-canceled';
@@ -880,13 +867,15 @@ async function renderRecharges() {
                 actions += `<button class="btn btn-success btn-xs" onclick="confirmApproveRecharge('${r._id}')">通过</button>`;
                 actions += `<button class="btn btn-danger btn-xs" onclick="confirmRejectRecharge('${r._id}')">拒绝</button>`;
             }
-            html += `<tr><td>${userId}</td><td>¥${r.amount}</td><td>${r.diamond}</td><td><span class="status-badge ${statusCls}">${statusText2}</span></td><td>${actions}</td></tr>`;
-        });
+            actions += `<button class="btn btn-danger btn-xs" onclick="confirmDeleteRecharge('${r._id}')">删除</button>`;
+            html += `<tr><td>${userId}</td><td>¥${r.amount}</td><td>${r.diamond}</td><td><span class="status-badge ${statusCls}">${statusText2}</span></td><td><div class="action-group">${actions}</div></td></tr>`;
+        }
         html += '</tbody></table></div>';
         container.innerHTML = html;
     } catch (err) { console.error(err); }
 }
 
+// 充值审核通过
 window.confirmApproveRecharge = function(rechargeId) {
     confirmAction('确认通过充值', '确认通过此充值申请？红钻将直接到账。', '确认通过', `doApproveRecharge('${rechargeId}')`);
 };
@@ -899,6 +888,7 @@ async function doApproveRecharge(rechargeId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
+// 充值审核拒绝
 window.confirmRejectRecharge = function(rechargeId) {
     confirmAction('确认拒绝充值', '确认拒绝此充值申请？', '确认拒绝', `doRejectRecharge('${rechargeId}')`);
 };
@@ -906,6 +896,18 @@ async function doRejectRecharge(rechargeId) {
     try {
         await apiRequest('/admin/recharges/' + rechargeId + '/reject', { method: 'PUT' });
         toast('已拒绝', 'warning');
+        renderRecharges();
+    } catch (err) { toast(err.message, 'error'); }
+}
+
+// 删除充值申请
+window.confirmDeleteRecharge = function(rechargeId) {
+    confirmAction('确认删除', '确认删除此充值申请？', '确认删除', `doDeleteRecharge('${rechargeId}')`);
+};
+async function doDeleteRecharge(rechargeId) {
+    try {
+        await apiRequest('/admin/recharges/' + rechargeId, { method: 'DELETE' });
+        toast('已删除', 'success');
         renderRecharges();
     } catch (err) { toast(err.message, 'error'); }
 }
@@ -947,7 +949,7 @@ async function renderUsers() {
             return;
         }
         let html = '<div class="table-wrap"><table><thead><tr><th>用户名</th><th>角色</th><th>红钻</th><th>余额</th><th>状态</th><th>操作</th></tr></thead><tbody>';
-        filtered.forEach(u => {
+        for (const u of filtered) {
             const roleText = u.role === 'boss' ? '老板' : u.role === 'handler' ? '打手' : '管理员';
             const statusText2 = u.status === 'active' ? '正常' : '封禁';
             const statusCls = u.status === 'active' ? 'status-onsale' : 'status-canceled';
@@ -957,15 +959,14 @@ async function renderUsers() {
                 actions += `<button class="btn btn-outline btn-xs" onclick="resetUserPassword('${u._id}')">重置密码</button>`;
             }
             html += `<tr><td>${u.username}</td><td>${roleText}</td><td>${u.diamond||0}</td><td>¥${u.balance||0}</td><td><span class="status-badge ${statusCls}">${statusText2}</span></td><td>${actions}</td></tr>`;
-        });
+        }
         html += '</tbody></table></div>';
         container.innerHTML = html;
     } catch (err) { console.error(err); }
 }
 
 window.toggleUserBan = function(userId) {
-    const action = document.querySelector(`button[onclick*="toggleUserBan('${userId}')"]`)?.textContent.trim() || '封禁';
-    confirmAction('确认操作', `确认${action}此用户？`, `确认${action}`, `doToggleUserBan('${userId}')`);
+    confirmAction('确认操作', '确认更改此用户状态？', '确认', `doToggleUserBan('${userId}')`);
 };
 async function doToggleUserBan(userId) {
     try {
@@ -1000,7 +1001,7 @@ async function renderBossView() {
         const container = document.getElementById('bossProductList');
         if (products.length === 0) { container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无商品</p></div>'; return; }
         let html = '';
-        products.forEach(p => {
+        for (const p of products) {
             const remaining = p.quantity - p.sold;
             html += `
                 <div class="card" style="padding:14px;border-left:3px solid ${remaining>0?'#f5c842':'transparent'};">
@@ -1014,19 +1015,19 @@ async function renderBossView() {
                     </div>
                 </div>
             `;
-        });
+        }
         container.innerHTML = html;
 
         const orders = await apiRequest('/orders/my');
         const myContainer = document.getElementById('bossMyOrders');
         if (orders.length === 0) { myContainer.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i><p>暂无订单</p></div>'; return; }
         let html2 = '<div class="table-wrap"><table><thead><tr><th>订单号</th><th>标题</th><th>金额</th><th>状态</th><th>操作</th></tr></thead><tbody>';
-        orders.forEach(o => {
+        for (const o of orders) {
             let actions = '';
             if (o.status === 'review') actions += `<button class="btn btn-success btn-xs" onclick="confirmBossComplete('${o._id}')">确认完成</button>`;
             actions += `<button class="btn btn-primary btn-xs" onclick="openChat('${o._id}')">聊天</button>`;
             html2 += `<tr><td>${o._id}</td><td>${o.title}</td><td>¥${o.price}</td><td><span class="status-badge ${statusClass(o.status)}">${statusText(o.status)}</span></td><td>${actions}</td></tr>`;
-        });
+        }
         html2 += '</tbody></table></div>';
         myContainer.innerHTML = html2;
     } catch (err) { console.error(err); }
@@ -1071,7 +1072,7 @@ async function renderHandlerView() {
             pContainer.innerHTML = '<div class="empty-state"><i class="fas fa-clock"></i><p>暂无待接单</p></div>';
         } else {
             let html = '';
-            pending.forEach(o => {
+            for (const o of pending) {
                 html += `
                     <div class="card" style="padding:14px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
@@ -1080,7 +1081,7 @@ async function renderHandlerView() {
                         </div>
                     </div>
                 `;
-            });
+            }
             pContainer.innerHTML = html;
         }
 
@@ -1090,7 +1091,7 @@ async function renderHandlerView() {
             oContainer.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><p>暂无进行中的订单</p></div>';
         } else {
             let html = '';
-            ongoing.forEach(o => {
+            for (const o of ongoing) {
                 const statusText2 = o.status === 'ongoing' ? '进行中' : '待验收';
                 const statusCls = o.status === 'ongoing' ? 'status-ongoing' : 'status-review';
                 let actions = '';
@@ -1104,7 +1105,7 @@ async function renderHandlerView() {
                         </div>
                     </div>
                 `;
-            });
+            }
             oContainer.innerHTML = html;
         }
 
@@ -1114,7 +1115,7 @@ async function renderHandlerView() {
             cContainer.innerHTML = '<div class="empty-state"><i class="fas fa-check-double"></i><p>暂无已完成订单</p></div>';
         } else {
             let html = '';
-            completed.forEach(o => {
+            for (const o of completed) {
                 html += `
                     <div class="card" style="padding:14px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
@@ -1123,7 +1124,7 @@ async function renderHandlerView() {
                         </div>
                     </div>
                 `;
-            });
+            }
             cContainer.innerHTML = html;
         }
     } catch (err) { console.error(err); }
