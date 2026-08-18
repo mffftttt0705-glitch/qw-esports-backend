@@ -467,6 +467,39 @@ app.post('/api/admin/gift', verifyToken, async (req, res) => {
   res.json({ message: '赠送成功' });
 });
 
+// ========== 邮件 API ==========
+app.get('/api/mails', verifyToken, async (req, res) => {
+  const mails = await Mail.find({ userId: req.userId }).sort({ createTime: -1 });
+  res.json(mails);
+});
+
+app.put('/api/mails/:id/claim', verifyToken, async (req, res) => {
+  const mail = await Mail.findById(req.params.id);
+  if (!mail) return res.status(404).json({ error: '邮件不存在' });
+  if (mail.userId.toString() !== req.userId) return res.status(403).json({ error: '无权操作' });
+  if (mail.status !== 'unread') return res.status(400).json({ error: '已领取' });
+  const user = await User.findById(req.userId);
+  user.diamond += mail.diamond;
+  await user.save();
+  mail.status = 'read';
+  mail.claimTime = new Date();
+  await mail.save();
+  res.json({ message: '领取成功' });
+});
+
+// ========== 邮件模型 ==========
+const MailSchema = new mongoose.Schema({
+  userId: mongoose.Schema.Types.ObjectId,
+  type: { type: String, enum: ['recharge', 'gift', 'system'] },
+  title: String,
+  content: String,
+  diamond: Number,
+  status: { type: String, enum: ['unread', 'read'], default: 'unread' },
+  createTime: { type: Date, default: Date.now },
+  claimTime: Date
+});
+const Mail = mongoose.model('Mail', MailSchema);
+
 // ========== 根路由 ==========
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
