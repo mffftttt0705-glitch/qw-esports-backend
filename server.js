@@ -182,6 +182,26 @@ app.post('/api/admin/products', verifyToken, async (req, res) => {
   res.json(product);
 });
 
+app.put('/api/admin/products/:id/stock', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const product = await Product.findById(req.params.id);
+  if (!product) return res.status(404).json({ error: '商品不存在' });
+  product.quantity += parseInt(req.body.add);
+  await product.save();
+  res.json(product);
+});
+
+app.put('/api/admin/products/:id/unshelf', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const product = await Product.findById(req.params.id);
+  if (!product) return res.status(404).json({ error: '商品不存在' });
+  product.hidden = true;
+  await product.save();
+  res.json({ message: '已下架' });
+});
+
 // ---------- 订单 API ----------
 app.post('/api/orders/buy', verifyToken, async (req, res) => {
   const { productId } = req.body;
@@ -326,6 +346,23 @@ app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   res.json({ message: '已取消' });
 });
 
+// 下架订单（管理员）- 新增功能
+app.put('/api/admin/orders/:id/unshelf', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  order.status = 'canceled';
+  await order.save();
+  // 退还红钻给老板
+  const boss = await User.findById(order.bossId);
+  if (boss) {
+    boss.diamond = (boss.diamond || 0) + order.price * 10;
+    await boss.save();
+  }
+  res.json({ message: '已下架' });
+});
+
 app.put('/api/admin/orders/:id/settle', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -377,15 +414,23 @@ app.put('/api/admin/recharges/:id/approve', verifyToken, async (req, res) => {
   recharge.status = 'approved';
   recharge.approveTime = new Date();
   await recharge.save();
+  // 直接增加红钻到用户账户
+  const userTarget = await User.findById(recharge.userId);
+  if (userTarget) {
+    userTarget.diamond = (userTarget.diamond || 0) + recharge.diamond;
+    await userTarget.save();
+  }
+  // 发送邮件通知
   const mail = new Mail({
     userId: recharge.userId,
     type: 'recharge',
     title: '充值成功',
-    content: `您充值 ¥${recharge.amount} 获得 ${recharge.diamond} 红钻，请点击领取。`,
-    diamond: recharge.diamond
+    content: `您充值 ¥${recharge.amount} 获得 ${recharge.diamond} 红钻，已到账。`,
+    diamond: recharge.diamond,
+    status: 'read'  // 直接标记为已读，红钻已到账
   });
   await mail.save();
-  res.json({ message: '审核通过，已发送邮件' });
+  res.json({ message: '审核通过，红钻已到账' });
 });
 
 app.put('/api/admin/recharges/:id/reject', verifyToken, async (req, res) => {
@@ -434,15 +479,20 @@ app.post('/api/admin/gift', verifyToken, async (req, res) => {
   const { targetUserId, amount } = req.body;
   const target = await User.findById(targetUserId);
   if (!target) return res.status(404).json({ error: '目标用户不存在' });
+  // 直接增加红钻
+  target.diamond = (target.diamond || 0) + amount;
+  await target.save();
+  // 发送邮件通知（已读）
   const mail = new Mail({
     userId: targetUserId,
     type: 'gift',
     title: '管理员赠送红钻',
-    content: `管理员赠送您 ${amount} 红钻，请点击领取。`,
-    diamond: amount
+    content: `管理员赠送您 ${amount} 红钻，已到账。`,
+    diamond: amount,
+    status: 'read'
   });
   await mail.save();
-  res.json({ message: '赠送成功，已发送邮件' });
+  res.json({ message: '赠送成功，红钻已到账' });
 });
 
 // ---------- 打手相关 ----------
