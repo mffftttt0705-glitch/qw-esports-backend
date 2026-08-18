@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// 连接 MongoDB（修改成你自己的密码）
+// ========== MongoDB 连接 ==========
 mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://mffttttt0705_db_user:LZQ704525@cluster0.lpunuuy.mongodb.net/?appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -122,13 +122,11 @@ app.get('/api/me', verifyToken, async (req, res) => {
 });
 
 // ========== 商品 API ==========
-// 获取所有在售商品（老板端）
 app.get('/api/products', async (req, res) => {
   const products = await Product.find({ hidden: false, $expr: { $gt: ['$quantity', '$sold'] } }).sort({ createTime: -1 });
   res.json(products);
 });
 
-// 管理员获取所有商品
 app.get('/api/admin/products', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权访问' });
@@ -136,7 +134,6 @@ app.get('/api/admin/products', verifyToken, async (req, res) => {
   res.json(products);
 });
 
-// 管理员上架商品
 app.post('/api/admin/products', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -146,7 +143,7 @@ app.post('/api/admin/products', verifyToken, async (req, res) => {
   res.json(product);
 });
 
-// 管理员下架商品（重要！）
+// 商品下架（核心功能）
 app.put('/api/admin/products/:id/unshelf', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -201,7 +198,60 @@ app.get('/api/admin/orders', verifyToken, async (req, res) => {
   res.json(orders);
 });
 
-// 管理员取消订单（下架）
+// 管理员指派打手
+app.put('/api/admin/orders/:id/assign', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const { handlerId } = req.body;
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  const handler = await User.findById(handlerId);
+  if (!handler || handler.role !== 'handler') return res.status(400).json({ error: '无效打手' });
+  order.handlerId = handlerId;
+  order.status = 'ongoing';
+  order.startTime = new Date();
+  await order.save();
+  res.json({ message: '指派成功' });
+});
+
+// 管理员强制完成
+app.put('/api/admin/orders/:id/force-complete', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  order.status = 'completed';
+  order.endTime = new Date();
+  await order.save();
+  res.json({ message: '强制完成成功' });
+});
+
+// 管理员确认完成（验收通过）
+app.put('/api/admin/orders/:id/confirm', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  order.status = 'completed';
+  order.endTime = new Date();
+  await order.save();
+  res.json({ message: '验收通过' });
+});
+
+// 管理员驳回订单
+app.put('/api/admin/orders/:id/reject', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const { reason } = req.body;
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  order.status = 'rejected';
+  order.rejectReason = reason;
+  await order.save();
+  res.json({ message: '已驳回' });
+});
+
+// 管理员取消订单
 app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -218,6 +268,7 @@ app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   res.json({ message: '订单已取消' });
 });
 
+// 管理员结算打手收入
 app.put('/api/admin/orders/:id/settle', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -248,7 +299,7 @@ app.get('/api/admin/recharges', verifyToken, async (req, res) => {
   res.json(recharges);
 });
 
-// 审核通过 - 直接到账（修复版）
+// 充值审核通过 - 红钻直接到账（核心功能）
 app.put('/api/admin/recharges/:id/approve', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -259,7 +310,7 @@ app.put('/api/admin/recharges/:id/approve', verifyToken, async (req, res) => {
   recharge.status = 'approved';
   recharge.approveTime = new Date();
   await recharge.save();
-  // 直接加红钻
+  // 红钻直接到账
   const targetUser = await User.findById(recharge.userId);
   if (targetUser) {
     targetUser.diamond = (targetUser.diamond || 0) + recharge.diamond;
@@ -268,7 +319,7 @@ app.put('/api/admin/recharges/:id/approve', verifyToken, async (req, res) => {
   res.json({ message: '审核通过，红钻已到账' });
 });
 
-// 拒绝充值
+// 充值审核拒绝
 app.put('/api/admin/recharges/:id/reject', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -280,11 +331,90 @@ app.put('/api/admin/recharges/:id/reject', verifyToken, async (req, res) => {
   res.json({ message: '已拒绝' });
 });
 
+// ========== 打手接单 ==========
+app.put('/api/orders/:id/take', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'handler') return res.status(403).json({ error: '只有打手可接单' });
+  if (user.handlerStatus === 'busy') return res.status(400).json({ error: '当前忙碌' });
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  if (order.status !== 'pending') return res.status(400).json({ error: '订单不可接' });
+  order.handlerId = user._id;
+  order.status = 'ongoing';
+  order.startTime = new Date();
+  await order.save();
+  res.json({ message: '接单成功' });
+});
+
+// 打手提交完成
+app.put('/api/orders/:id/submit-complete', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'handler') return res.status(403).json({ error: '只有打手可操作' });
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  if (order.handlerId.toString() !== user._id.toString()) return res.status(403).json({ error: '不是你的订单' });
+  if (order.status !== 'ongoing') return res.status(400).json({ error: '只有进行中可提交' });
+  order.status = 'review';
+  await order.save();
+  res.json({ message: '已提交验收' });
+});
+
+// 老板确认完成
+app.put('/api/orders/:id/boss-confirm', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'boss') return res.status(403).json({ error: '只有老板可操作' });
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  if (order.bossId.toString() !== user._id.toString()) return res.status(403).json({ error: '不是你的订单' });
+  if (order.status !== 'review') return res.status(400).json({ error: '只有待验收可确认' });
+  order.status = 'completed';
+  order.endTime = new Date();
+  await order.save();
+  res.json({ message: '已确认完成，等待管理员结算' });
+});
+
+// ========== 聊天功能 ==========
+app.post('/api/orders/:id/chat', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  // 验证用户是否有权限（老板或打手）
+  if (order.bossId.toString() !== user._id.toString() && order.handlerId && order.handlerId.toString() !== user._id.toString()) {
+    return res.status(403).json({ error: '无权操作' });
+  }
+  const { content } = req.body;
+  if (!content) return res.status(400).json({ error: '内容不能为空' });
+  const sender = user.role === 'boss' ? 'boss' : user.role === 'handler' ? 'handler' : 'system';
+  order.messages.push({ sender, content, time: new Date() });
+  await order.save();
+  res.json({ message: '发送成功' });
+});
+
+// ========== 用户管理 ==========
+app.get('/api/admin/users', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权访问' });
+  const users = await User.find().select('-password');
+  res.json(users);
+});
+
+// ========== 管理员赠送红钻 ==========
+app.post('/api/admin/gift', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const { targetUserId, amount } = req.body;
+  const target = await User.findById(targetUserId);
+  if (!target) return res.status(404).json({ error: '目标用户不存在' });
+  target.diamond = (target.diamond || 0) + amount;
+  await target.save();
+  res.json({ message: '赠送成功' });
+});
+
 // ========== 根路由 ==========
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ========== 启动 ==========
+// ========== 启动服务器 ==========
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 服务器运行在端口 ${PORT}`));
