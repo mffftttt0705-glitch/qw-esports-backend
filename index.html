@@ -74,6 +74,7 @@
         .brand-name small { font-weight: 300; font-size: 13px; -webkit-text-fill-color: rgba(180,210,255,0.6); color: rgba(180,210,255,0.6); }
         .header-right { font-size: 13px; color: #7a8faf; display: flex; align-items: center; gap: 6px; }
         .header-right i { color: #3a7eff; }
+
         .entry-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -114,8 +115,10 @@
             color: #6a9fd6;
             border: 1px solid rgba(60,160,255,0.06);
         }
+
         .section-title { font-size: 18px; font-weight: 600; color: #d0e4ff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .section-title i { color: #3a7eff; }
+
         .list-item {
             background: rgba(18,24,42,0.5);
             border-radius: 20px;
@@ -130,6 +133,7 @@
         .list-item .left .desc { font-size: 12px; color: #7a8faf; }
         .list-item .right .price { font-weight: 600; color: #69db7c; font-size: 16px; }
         .list-item .right .tag { font-size: 11px; background: rgba(60,160,255,0.1); padding: 2px 12px; border-radius: 30px; color: #6ab0ff; }
+
         .btn-primary {
             background: linear-gradient(145deg, #1a6aff, #0044cc);
             border: none;
@@ -205,31 +209,20 @@
             border: 1px solid rgba(60,160,255,0.15);
             border-radius: 32px;
             padding: 32px 28px;
-            max-width: 360px;
+            max-width: 380px;
             width: 90%;
             text-align: center;
             animation: fadeUp 0.25s ease;
         }
-        .modal-box h2 { font-size: 22px; color: #d0e4ff; }
+        .modal-box h3 { font-size: 20px; color: #d0e4ff; margin-bottom: 8px; }
         .modal-box p { color: #7a8faf; font-size: 14px; margin: 6px 0 20px; }
-        .modal-box input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 60px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(60,160,255,0.15);
-            color: #fff;
-            font-size: 16px;
-            text-align: center;
-            outline: none;
-            margin-bottom: 12px;
-        }
-        .modal-box input:focus { border-color: #3a7eff; }
         .modal-box .btn-row { display: flex; gap: 10px; }
         .modal-box .btn-row button { flex: 1; padding: 12px; border-radius: 60px; border: none; font-weight: 600; cursor: pointer; }
-        .btn-confirm { background: linear-gradient(145deg, #1a6aff, #0044cc); color: #fff; }
-        .btn-cancel { background: rgba(255,255,255,0.06); color: #a0b8d8; border: 1px solid rgba(255,255,255,0.06) !important; }
-        .error-msg { color: #ff6b6b; font-size: 13px; min-height: 20px; margin-top: 4px; }
+
+        .modal-box .form-group { margin-bottom: 14px; text-align: left; }
+        .modal-box .form-group label { display: block; font-size: 13px; color: #b0b8c8; margin-bottom: 4px; }
+        .modal-box .form-group input { width: 100%; background: #0b0d10; border: 1px solid #2a2f3a; border-radius: 12px; padding: 10px 14px; color: #e8e6e3; font-size: 14px; outline: none; }
+        .modal-box .form-group input:focus { border-color: #f5c842; }
 
         .toast {
             position: fixed;
@@ -309,14 +302,6 @@
         .auth-buttons .btn { width: 100%; justify-content: center; padding: 14px; font-size: 16px; }
         .auth-link { margin-top: 20px; font-size: 13px; color: #5a6378; }
         .auth-link span { color: #f5c842; cursor: pointer; }
-
-        .auth-modal .modal-box { max-width: 400px; }
-        .auth-modal .form-group { margin-bottom: 14px; text-align: left; }
-        .auth-modal .form-group label { display: block; font-size: 13px; color: #b0b8c8; margin-bottom: 4px; }
-        .auth-modal .form-group input { width: 100%; background: #0b0d10; border: 1px solid #2a2f3a; border-radius: 12px; padding: 10px 14px; color: #e8e6e3; font-size: 14px; outline: none; }
-        .auth-modal .form-group input:focus { border-color: #f5c842; }
-        .auth-modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
-        .auth-modal .modal-actions .btn { flex: 1; }
 
         .admin-card {
             background: rgba(18,24,42,0.5);
@@ -455,10 +440,9 @@
     </div>
 
     <!-- ===== 模态框 ===== -->
-    <div class="modal-overlay auth-modal" id="authModal"><div class="modal-box" id="authModalContent"></div></div>
-    <div class="modal-overlay chat-modal" id="chatModal"><div class="modal-box" id="chatModalContent"></div></div>
-    <div class="modal-overlay" id="rechargeModal"><div class="modal-box" id="rechargeModalContent"></div></div>
-    <div class="modal-overlay" id="mailModal"><div class="modal-box" id="mailModalContent"></div></div>
+    <div class="modal-overlay" id="customModal">
+        <div class="modal-box" id="customModalContent"></div>
+    </div>
 
     <!-- ===== 主应用 ===== -->
     <div id="mainApp" class="app-wrapper hidden">
@@ -610,24 +594,40 @@
         }
 
         // ============================================================
+        //  自定义模态框
+        // ============================================================
+        function showCustomModal(html) {
+            const modal = document.getElementById('customModal');
+            const content = document.getElementById('customModalContent');
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function closeCustomModal() {
+            document.getElementById('customModal').classList.remove('active');
+        }
+
+        // ============================================================
         //  认证模块
         // ============================================================
         function showAuthModal(html) {
-            document.getElementById('authModalContent').innerHTML = html;
-            document.getElementById('authModal').classList.add('active');
+            const modal = document.getElementById('customModal');
+            const content = document.getElementById('customModalContent');
+            content.innerHTML = html;
+            modal.classList.add('active');
         }
-        function closeAuthModal() { document.getElementById('authModal').classList.remove('active'); }
+        function closeAuthModal() { document.getElementById('customModal').classList.remove('active'); }
 
         function showRegister(role) {
             const roleText = { boss: '老板', handler: '打手' } [role] || '用户';
             showAuthModal(`
                 <h3><i class="fas fa-user-plus"></i> 注册${roleText}账号</h3>
-                <p class="sub" style="color:#8892a8;font-size:14px;">填写信息后即可创建账号</p>
+                <p style="color:#8892a8;font-size:14px;margin-bottom:20px;">填写信息后即可创建账号</p>
                 <div class="form-group"><label>用户名</label><input type="text" id="regUsername" placeholder="请输入用户名"></div>
                 <div class="form-group"><label>密码</label><input type="password" id="regPassword" placeholder="请输入密码"></div>
                 <div class="form-group"><label>联系方式（可选）</label><input type="text" id="regPhone" placeholder="手机号/微信"></div>
                 <div class="form-group"><label>主玩游戏（打手必填）</label><input type="text" id="regGame" placeholder="暗区突围 / 三角洲"></div>
-                <div class="modal-actions">
+                <div class="btn-row">
                     <button class="btn btn-outline" onclick="closeAuthModal()">取消</button>
                     <button class="btn btn-primary" onclick="doRegister('${role}')">注册</button>
                 </div>
@@ -651,10 +651,10 @@
         function showLogin() {
             showAuthModal(`
                 <h3><i class="fas fa-sign-in-alt"></i> 登录</h3>
-                <p class="sub" style="color:#8892a8;font-size:14px;">输入用户名和密码</p>
+                <p style="color:#8892a8;font-size:14px;margin-bottom:20px;">输入用户名和密码</p>
                 <div class="form-group"><label>用户名</label><input type="text" id="loginUsername" placeholder="请输入用户名"></div>
                 <div class="form-group"><label>密码</label><input type="password" id="loginPassword" placeholder="请输入密码"></div>
-                <div class="modal-actions">
+                <div class="btn-row">
                     <button class="btn btn-outline" onclick="closeAuthModal()">取消</button>
                     <button class="btn btn-primary" onclick="doLogin()">登录</button>
                 </div>
@@ -772,13 +772,40 @@
                         <td>¥${p.price}</td>
                         <td>${p.sold}/${p.quantity}</td>
                         <td><span class="status-badge ${statusCls}">${statusText2}</span></td>
-                        <td><button class="btn btn-danger btn-xs" onclick="unshelfProduct('${p.id}')"><i class="fas fa-trash"></i> 下架</button></td>
+                        <td><button class="btn btn-danger btn-xs" onclick="showUnshelfConfirm('${p.id}')"><i class="fas fa-trash"></i> 下架</button></td>
                     </tr>`;
                 });
                 html += '</tbody></table></div>';
                 container.innerHTML = html;
             } catch (err) { console.error(err); }
         }
+
+        // 下架商品 - 自定义弹窗
+        window.showUnshelfConfirm = function(productId) {
+            showCustomModal(`
+                <h3><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> 确认下架</h3>
+                <p>确认下架此商品？下架后老板将无法购买。</p>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+                    <button class="btn btn-danger" onclick="confirmUnshelf('${productId}')">确认下架</button>
+                </div>
+            `);
+        };
+
+        window.confirmUnshelf = function(productId) {
+            closeCustomModal();
+            fetch(API_URL + '/admin/products/' + productId + '/unshelf', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': token }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+                toast('商品已下架', 'success');
+                renderProducts();
+            })
+            .catch(err => toast(err.message, 'error'));
+        };
 
         async function shelfProduct() {
             const game = document.getElementById('prodGame').value;
@@ -796,22 +823,6 @@
                 renderProducts();
             } catch (err) { toast(err.message, 'error'); }
         }
-
-        // 下架商品 - 核心修复
-        window.unshelfProduct = function(productId) {
-            if (!confirm('确认下架此商品？下架后老板将无法购买。')) return;
-            fetch(API_URL + '/admin/products/' + productId + '/unshelf', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': token }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) throw new Error(data.error);
-                toast('商品已下架', 'success');
-                renderProducts();
-            })
-            .catch(err => toast(err.message, 'error'));
-        };
 
         // ===== 订单管理 =====
         async function renderAdminOrders() {
@@ -850,13 +861,33 @@
                 .catch(err => toast(err.message, 'error'));
         };
         window.adminForceComplete = function(orderId) {
-            if (!confirm('确认强制完成？')) return;
+            showCustomModal(`
+                <h3><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> 确认强制完成</h3>
+                <p>确认强制完成此订单？</p>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+                    <button class="btn btn-warning" onclick="confirmForceComplete('${orderId}')">确认强制完成</button>
+                </div>
+            `);
+        };
+        window.confirmForceComplete = function(orderId) {
+            closeCustomModal();
             apiRequest('/admin/orders/' + orderId + '/force-complete', { method: 'PUT' })
                 .then(() => { toast('强制完成成功', 'success'); renderAdminOrders(); })
                 .catch(err => toast(err.message, 'error'));
         };
         window.adminConfirmComplete = function(orderId) {
-            if (!confirm('确认验收通过？')) return;
+            showCustomModal(`
+                <h3><i class="fas fa-check-circle" style="color:#22c55e;"></i> 确认验收通过</h3>
+                <p>确认此订单验收通过？</p>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+                    <button class="btn btn-success" onclick="confirmAdminComplete('${orderId}')">确认通过</button>
+                </div>
+            `);
+        };
+        window.confirmAdminComplete = function(orderId) {
+            closeCustomModal();
             apiRequest('/admin/orders/' + orderId + '/confirm', { method: 'PUT' })
                 .then(() => { toast('验收通过', 'success'); renderAdminOrders(); })
                 .catch(err => toast(err.message, 'error'));
@@ -869,7 +900,17 @@
                 .catch(err => toast(err.message, 'error'));
         };
         window.adminCancelOrder = function(orderId) {
-            if (!confirm('确认取消此订单？')) return;
+            showCustomModal(`
+                <h3><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> 确认取消</h3>
+                <p>确认取消此订单？</p>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+                    <button class="btn btn-danger" onclick="confirmAdminCancel('${orderId}')">确认取消</button>
+                </div>
+            `);
+        };
+        window.confirmAdminCancel = function(orderId) {
+            closeCustomModal();
             apiRequest('/admin/orders/' + orderId + '/cancel', { method: 'PUT' })
                 .then(() => { toast('已取消', 'warning'); renderAdminOrders(); })
                 .catch(err => toast(err.message, 'error'));
@@ -882,7 +923,7 @@
                 .catch(err => toast(err.message, 'error'));
         };
 
-        // ===== 充值管理（含审核通过功能） =====
+        // ===== 充值管理（含审核通过功能 + 自定义弹窗） =====
         async function renderRecharges() {
             try {
                 const recharges = await apiRequest('/admin/recharges');
@@ -897,8 +938,8 @@
                     const statusCls = r.status === 'pending' ? 'status-pending' : r.status === 'approved' ? 'status-onsale' : 'status-canceled';
                     let actions = '';
                     if (r.status === 'pending') {
-                        actions += `<button class="btn btn-success btn-xs" onclick="approveRecharge('${r.id}')">通过</button>`;
-                        actions += `<button class="btn btn-danger btn-xs" onclick="rejectRecharge('${r.id}')">拒绝</button>`;
+                        actions += `<button class="btn btn-success btn-xs" onclick="showApproveRecharge('${r.id}')">通过</button>`;
+                        actions += `<button class="btn btn-danger btn-xs" onclick="showRejectRecharge('${r.id}')">拒绝</button>`;
                     }
                     html += `<tr><td>${r.userId}</td><td>¥${r.amount}</td><td>${r.diamond}</td><td><span class="status-badge ${statusCls}">${statusText2}</span></td><td>${actions}</td></tr>`;
                 });
@@ -907,9 +948,20 @@
             } catch (err) { console.error(err); }
         }
 
-        // 充值审核 - 通过（核心修复）
-        window.approveRecharge = function(rechargeId) {
-            if (!confirm('确认通过此充值申请？红钻将直接到账。')) return;
+        // 充值审核 - 通过（自定义弹窗）
+        window.showApproveRecharge = function(rechargeId) {
+            showCustomModal(`
+                <h3><i class="fas fa-check-circle" style="color:#22c55e;"></i> 确认通过</h3>
+                <p>确认通过此充值申请？红钻将直接到账。</p>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+                    <button class="btn btn-success" onclick="confirmApprove('${rechargeId}')">确认通过</button>
+                </div>
+            `);
+        };
+
+        window.confirmApprove = function(rechargeId) {
+            closeCustomModal();
             fetch(API_URL + '/admin/recharges/' + rechargeId + '/approve', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': token }
@@ -924,8 +976,20 @@
             .catch(err => toast(err.message, 'error'));
         };
 
-        window.rejectRecharge = function(rechargeId) {
-            if (!confirm('确认拒绝此充值申请？')) return;
+        // 充值审核 - 拒绝（自定义弹窗）
+        window.showRejectRecharge = function(rechargeId) {
+            showCustomModal(`
+                <h3><i class="fas fa-times-circle" style="color:#ef4444;"></i> 确认拒绝</h3>
+                <p>确认拒绝此充值申请？</p>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+                    <button class="btn btn-danger" onclick="confirmReject('${rechargeId}')">确认拒绝</button>
+                </div>
+            `);
+        };
+
+        window.confirmReject = function(rechargeId) {
+            closeCustomModal();
             fetch(API_URL + '/admin/recharges/' + rechargeId + '/reject', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': token }
@@ -1037,7 +1101,17 @@
             } catch (err) { toast(err.message, 'error'); }
         };
         window.bossConfirmComplete = function(orderId) {
-            if (!confirm('确认已完成此订单服务？')) return;
+            showCustomModal(`
+                <h3><i class="fas fa-check-circle" style="color:#22c55e;"></i> 确认完成</h3>
+                <p>确认已完成此订单服务？</p>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+                    <button class="btn btn-success" onclick="confirmBossComplete('${orderId}')">确认完成</button>
+                </div>
+            `);
+        };
+        window.confirmBossComplete = function(orderId) {
+            closeCustomModal();
             apiRequest('/orders/' + orderId + '/boss-confirm', { method: 'PUT' })
                 .then(() => { toast('已确认完成', 'success'); renderBossView(); })
                 .catch(err => toast(err.message, 'error'));
@@ -1118,12 +1192,33 @@
         }
 
         window.handlerTake = function(orderId) {
+            showCustomModal(`
+                <h3><i class="fas fa-handshake"></i> 确认接单</h3>
+                <p>确认接取此订单？</p>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+                    <button class="btn btn-primary" onclick="confirmHandlerTake('${orderId}')">确认接单</button>
+                </div>
+            `);
+        };
+        window.confirmHandlerTake = function(orderId) {
+            closeCustomModal();
             apiRequest('/orders/' + orderId + '/take', { method: 'PUT' })
                 .then(() => { toast('接单成功', 'success'); renderHandlerView(); })
                 .catch(err => toast(err.message, 'error'));
         };
         window.handlerSubmitComplete = function(orderId) {
-            if (!confirm('确认已完成此订单服务？')) return;
+            showCustomModal(`
+                <h3><i class="fas fa-upload"></i> 提交完成</h3>
+                <p>确认已完成此订单服务？</p>
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+                    <button class="btn btn-warning" onclick="confirmHandlerSubmit('${orderId}')">确认提交</button>
+                </div>
+            `);
+        };
+        window.confirmHandlerSubmit = function(orderId) {
+            closeCustomModal();
             apiRequest('/orders/' + orderId + '/submit-complete', { method: 'PUT' })
                 .then(() => { toast('已提交验收', 'success'); renderHandlerView(); })
                 .catch(err => toast(err.message, 'error'));
@@ -1153,13 +1248,13 @@
                     </div>`).join('')}
                 </div>
                 <div style="text-align:center;margin:8px 0;"><span id="selectedRecharge" style="color:#f5c842;">请选择档位</span></div>
-                <div class="modal-actions">
+                <div class="btn-row">
                     <button class="btn btn-outline" onclick="closeRecharge()">取消</button>
                     <button class="btn btn-success" id="submitRechargeBtn" disabled>提交充值</button>
                 </div>
             `;
-            document.getElementById('rechargeModalContent').innerHTML = html;
-            document.getElementById('rechargeModal').classList.add('active');
+            document.getElementById('customModalContent').innerHTML = html;
+            document.getElementById('customModal').classList.add('active');
             document.getElementById('submitRechargeBtn').addEventListener('click', submitRecharge);
         };
         window.selectRecharge = function(el, amount, diamond) {
@@ -1176,7 +1271,7 @@
                 .catch(err => toast(err.message, 'error'));
         }
         window.closeRecharge = function() {
-            document.getElementById('rechargeModal').classList.remove('active');
+            document.getElementById('customModal').classList.remove('active');
             selectedRecharge = null;
         };
 
@@ -1199,15 +1294,13 @@
                             </div>
                         </div>
                     `).join('');
-                document.getElementById('mailModalContent').innerHTML = `
+                showCustomModal(`
                     <h3><i class="fas fa-envelope"></i> 我的邮件</h3>
                     <div style="margin-top:12px;max-height:400px;overflow-y:auto;">${listHtml}</div>
-                    <div class="modal-actions"><button class="btn btn-outline" onclick="closeMail()">关闭</button></div>
-                `;
-                document.getElementById('mailModal').classList.add('active');
+                    <div class="btn-row"><button class="btn btn-outline" onclick="closeCustomModal()">关闭</button></div>
+                `);
             }).catch(err => toast(err.message, 'error'));
         };
-        window.closeMail = function() { document.getElementById('mailModal').classList.remove('active'); };
         window.claimMail = function(mailId) {
             apiRequest('/mails/' + mailId + '/claim', { method: 'PUT' })
                 .then(() => { toast('领取成功', 'success'); openMail(); renderBossView(); })
@@ -1229,7 +1322,7 @@
                         return `<div class="chat-msg ${senderClass}"><strong>${senderName}:</strong> ${msg.content} <span class="time">${msg.time}</span></div>`;
                     }).join('') :
                     '<div class="empty-state"><p>暂无消息</p></div>';
-                document.getElementById('chatModalContent').innerHTML = `
+                showCustomModal(`
                     <h3><i class="fas fa-comment"></i> 订单 ${order.id} 聊天</h3>
                     <p style="font-size:13px;color:#8892a8;">${order.game} · ${order.title}</p>
                     <p style="font-size:12px;color:#5a6378;">状态：${statusText(order.status)} ${isEnded ? '（已结束，只读）' : ''}</p>
@@ -1240,9 +1333,9 @@
                             <button class="btn btn-primary btn-sm" id="chatSendBtn" ${isEnded ? 'disabled' : ''}><i class="fas fa-paper-plane"></i> 发送</button>
                         </div>
                     </div>
-                    <div class="modal-actions"><button class="btn btn-outline" onclick="closeChat()">关闭</button></div>
-                `;
-                document.getElementById('chatModal').classList.add('active');
+                    <div class="btn-row"><button class="btn btn-outline" onclick="closeCustomModal()">关闭</button></div>
+                `);
+                document.getElementById('customModal').classList.add('active');
                 const msgContainer = document.getElementById('chatMessages');
                 if (msgContainer) msgContainer.scrollTop = msgContainer.scrollHeight;
                 const sendBtn = document.getElementById('chatSendBtn');
@@ -1260,7 +1353,6 @@
                 }
             }).catch(err => toast(err.message, 'error'));
         };
-        window.closeChat = function() { document.getElementById('chatModal').classList.remove('active'); };
 
         // ============================================================
         //  底部导航
