@@ -82,6 +82,19 @@ const AnnounceSchema = new mongoose.Schema({
 });
 const Announce = mongoose.model('Announce', AnnounceSchema);
 
+// ========== 邮件模型 ==========
+const MailSchema = new mongoose.Schema({
+  userId: mongoose.Schema.Types.ObjectId,
+  type: { type: String, enum: ['recharge', 'gift', 'system'] },
+  title: String,
+  content: String,
+  diamond: Number,
+  status: { type: String, enum: ['unread', 'read'], default: 'unread' },
+  createTime: { type: Date, default: Date.now },
+  claimTime: Date
+});
+const Mail = mongoose.model('Mail', MailSchema);
+
 // 初始化公告
 async function initAnnounce() {
   const count = await Announce.countDocuments();
@@ -195,6 +208,35 @@ app.put('/api/admin/products/:id/unshelf', verifyToken, async (req, res) => {
   }
 });
 
+// 重新上架商品
+app.put('/api/admin/products/:id/reshelf', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: '商品不存在' });
+    product.hidden = false;
+    await product.save();
+    res.json({ success: true, message: '商品已重新上架' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 删除商品
+app.delete('/api/admin/products/:id', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: '商品不存在' });
+    await product.deleteOne();
+    res.json({ success: true, message: '商品已删除' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ========== 订单 API ==========
 app.post('/api/orders/buy', verifyToken, async (req, res) => {
   const { productId } = req.body;
@@ -220,6 +262,31 @@ app.post('/api/orders/buy', verifyToken, async (req, res) => {
   product.sold += 1;
   await product.save();
   res.json({ orderId: order._id, message: '购买成功' });
+});
+
+// 直接发布订单（管理员创建订单到打手页面）
+app.post('/api/admin/orders/direct', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+    const { game, title, desc, price } = req.body;
+    if (!title || !price) return res.status(400).json({ error: '请填写完整信息' });
+    const order = new Order({
+      productId: null,
+      bossId: user._id,
+      handlerId: null,
+      status: 'pending',
+      price: price,
+      game: game || '暗区突围',
+      title: title,
+      desc: desc || '',
+      messages: [{ sender: 'system', content: `🎉 订单已创建（管理员发布），订单号: ${order._id}`, time: new Date() }]
+    });
+    await order.save();
+    res.json({ success: true, message: '订单已发布' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.get('/api/orders/my', verifyToken, async (req, res) => {
@@ -371,6 +438,20 @@ app.put('/api/admin/recharges/:id/reject', verifyToken, async (req, res) => {
   }
 });
 
+// 删除充值申请
+app.delete('/api/admin/recharges/:id', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+    const recharge = await Recharge.findById(req.params.id);
+    if (!recharge) return res.status(404).json({ error: '记录不存在' });
+    await recharge.deleteOne();
+    res.json({ success: true, message: '充值申请已删除' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ========== 打手 API ==========
 app.put('/api/orders/:id/take', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
@@ -486,19 +567,6 @@ app.put('/api/mails/:id/claim', verifyToken, async (req, res) => {
   await mail.save();
   res.json({ message: '领取成功' });
 });
-
-// ========== 邮件模型 ==========
-const MailSchema = new mongoose.Schema({
-  userId: mongoose.Schema.Types.ObjectId,
-  type: { type: String, enum: ['recharge', 'gift', 'system'] },
-  title: String,
-  content: String,
-  diamond: Number,
-  status: { type: String, enum: ['unread', 'read'], default: 'unread' },
-  createTime: { type: Date, default: Date.now },
-  claimTime: Date
-});
-const Mail = mongoose.model('Mail', MailSchema);
 
 // ========== 根路由 ==========
 app.get('/', (req, res) => {
