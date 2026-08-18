@@ -8,7 +8,7 @@ const path = require('path');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(__dirname));
 
 // ========== MongoDB 连接 ==========
@@ -74,6 +74,27 @@ const RechargeSchema = new mongoose.Schema({
 });
 const Recharge = mongoose.model('Recharge', RechargeSchema);
 
+// ========== 公告模型 ==========
+const AnnounceSchema = new mongoose.Schema({
+  content: { type: String, default: '欢迎使用 QW电竞护航平台！' },
+  images: { type: [String], default: [] },
+  updatedAt: { type: Date, default: Date.now }
+});
+const Announce = mongoose.model('Announce', AnnounceSchema);
+
+// 初始化公告
+async function initAnnounce() {
+  const count = await Announce.countDocuments();
+  if (count === 0) {
+    const announce = new Announce({
+      content: '欢迎使用 QW电竞护航平台！',
+      images: []
+    });
+    await announce.save();
+  }
+}
+initAnnounce();
+
 // ========== 中间件 ==========
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization;
@@ -119,6 +140,22 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/me', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId).select('-password');
   res.json(user);
+});
+
+// ========== 公告 API ==========
+app.get('/api/announce', async (req, res) => {
+  const announce = await Announce.findOne().sort({ updatedAt: -1 });
+  res.json(announce || { content: '欢迎使用 QW电竞护航平台！', images: [] });
+});
+
+app.put('/api/admin/announce', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const { content, images } = req.body;
+  await Announce.deleteMany({});
+  const announce = new Announce({ content, images: images || [] });
+  await announce.save();
+  res.json({ success: true, message: '公告已更新' });
 });
 
 // ========== 商品 API ==========
@@ -296,7 +333,7 @@ app.get('/api/admin/recharges', verifyToken, async (req, res) => {
   res.json(recharges);
 });
 
-// 充值审核通过（核心功能）
+// 充值审核通过
 app.put('/api/admin/recharges/:id/approve', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -396,6 +433,26 @@ app.get('/api/admin/users', verifyToken, async (req, res) => {
   if (user.role !== 'admin') return res.status(403).json({ error: '无权访问' });
   const users = await User.find().select('-password');
   res.json(users);
+});
+
+app.put('/api/admin/users/:id/ban', verifyToken, async (req, res) => {
+  const admin = await User.findById(req.userId);
+  if (admin.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const target = await User.findById(req.params.id);
+  if (!target) return res.status(404).json({ error: '用户不存在' });
+  target.status = target.status === 'active' ? 'banned' : 'active';
+  await target.save();
+  res.json({ success: true, message: '用户状态已更新' });
+});
+
+app.put('/api/admin/users/:id/reset-password', verifyToken, async (req, res) => {
+  const admin = await User.findById(req.userId);
+  if (admin.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const target = await User.findById(req.params.id);
+  if (!target) return res.status(404).json({ error: '用户不存在' });
+  target.password = await bcrypt.hash('123456', 10);
+  await target.save();
+  res.json({ success: true, message: '密码已重置为 123456' });
 });
 
 // ========== 管理员赠送红钻 ==========
