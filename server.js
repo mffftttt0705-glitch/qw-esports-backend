@@ -4,11 +4,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname));
 
+// ========== MongoDB 连接 ==========
 mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://mffttttt0705_db_user:LZQ704525@cluster0.lpunuuy.mongodb.net/?appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -17,7 +20,6 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://mffttttt0705_db_user:
 .catch(err => console.error('❌ MongoDB 连接失败:', err));
 
 // ========== 数据模型 ==========
-
 const UserSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
@@ -98,14 +100,6 @@ const MailSchema = new mongoose.Schema({
   claimTime: Date
 });
 const Mail = mongoose.model('Mail', MailSchema);
-
-const WithdrawSchema = new mongoose.Schema({
-  handlerId: mongoose.Schema.Types.ObjectId,
-  amount: Number,
-  status: { type: String, enum: ['pending', 'paid'], default: 'pending' },
-  time: { type: Date, default: Date.now }
-});
-const Withdraw = mongoose.model('Withdraw', WithdrawSchema);
 
 // ========== 中间件 ==========
 const verifyToken = (req, res, next) => {
@@ -188,26 +182,6 @@ app.post('/api/admin/products', verifyToken, async (req, res) => {
   res.json(product);
 });
 
-app.put('/api/admin/products/:id/stock', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const product = await Product.findById(req.params.id);
-  if (!product) return res.status(404).json({ error: '商品不存在' });
-  product.quantity += parseInt(req.body.add);
-  await product.save();
-  res.json(product);
-});
-
-app.put('/api/admin/products/:id/unshelf', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const product = await Product.findById(req.params.id);
-  if (!product) return res.status(404).json({ error: '商品不存在' });
-  product.hidden = true;
-  await product.save();
-  res.json({ message: '已下架' });
-});
-
 // ---------- 订单 API ----------
 app.post('/api/orders/buy', verifyToken, async (req, res) => {
   const { productId } = req.body;
@@ -218,10 +192,8 @@ app.post('/api/orders/buy', verifyToken, async (req, res) => {
     const user = await User.findById(req.userId);
     const diamondCost = product.price * 10;
     if (user.diamond < diamondCost) return res.status(400).json({ error: '红钻不足' });
-
     user.diamond -= diamondCost;
     await user.save();
-
     const order = new Order({
       productId: product._id,
       bossId: user._id,
@@ -236,7 +208,6 @@ app.post('/api/orders/buy', verifyToken, async (req, res) => {
     await order.save();
     product.sold += 1;
     await product.save();
-
     const trans = new Transaction({
       userId: user._id,
       orderId: order._id,
@@ -246,7 +217,6 @@ app.post('/api/orders/buy', verifyToken, async (req, res) => {
       desc: `购买商品 ${product.title}，扣除 ${diamondCost} 红钻`
     });
     await trans.save();
-
     res.json({ orderId: order._id, message: '购买成功' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -309,30 +279,6 @@ app.put('/api/admin/orders/:id/force-complete', verifyToken, async (req, res) =>
   res.json({ message: '强制完成成功' });
 });
 
-app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const order = await Order.findById(req.params.id);
-  if (!order) return res.status(404).json({ error: '订单不存在' });
-  order.status = 'canceled';
-  await order.save();
-  const boss = await User.findById(order.bossId);
-  if (boss) {
-    boss.diamond += order.price * 10;
-    await boss.save();
-    const trans = new Transaction({
-      userId: order.bossId,
-      orderId: order._id,
-      type: 'income',
-      amount: order.price * 10,
-      status: 'paid',
-      desc: `订单 ${order._id} 取消，退还红钻`
-    });
-    await trans.save();
-  }
-  res.json({ message: '已取消' });
-});
-
 app.put('/api/admin/orders/:id/confirm', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -356,15 +302,28 @@ app.put('/api/admin/orders/:id/reject', verifyToken, async (req, res) => {
   res.json({ message: '已驳回' });
 });
 
-app.put('/api/admin/orders/:id/transfer', verifyToken, async (req, res) => {
+app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const { handlerId } = req.body;
   const order = await Order.findById(req.params.id);
   if (!order) return res.status(404).json({ error: '订单不存在' });
-  order.handlerId = handlerId;
+  order.status = 'canceled';
   await order.save();
-  res.json({ message: '转单成功' });
+  const boss = await User.findById(order.bossId);
+  if (boss) {
+    boss.diamond += order.price * 10;
+    await boss.save();
+    const trans = new Transaction({
+      userId: order.bossId,
+      orderId: order._id,
+      type: 'income',
+      amount: order.price * 10,
+      status: 'paid',
+      desc: `订单 ${order._id} 取消，退还红钻`
+    });
+    await trans.save();
+  }
+  res.json({ message: '已取消' });
 });
 
 app.put('/api/admin/orders/:id/settle', verifyToken, async (req, res) => {
@@ -392,17 +351,6 @@ app.put('/api/admin/orders/:id/settle', verifyToken, async (req, res) => {
   const freeze = await Transaction.findOne({ orderId: order._id, type: 'income', status: 'pending' });
   if (freeze) { freeze.status = 'paid'; await freeze.save(); }
   res.json({ message: '结算成功' });
-});
-
-app.delete('/api/admin/orders/:id', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const order = await Order.findById(req.params.id);
-  if (!order) return res.status(404).json({ error: '订单不存在' });
-  if (order.status !== 'completed' || !order.settled) return res.status(400).json({ error: '只能删除已完成且已结算的订单' });
-  order.hidden = true;
-  await order.save();
-  res.json({ message: '已删除' });
 });
 
 // ---------- 充值 API ----------
@@ -554,48 +502,9 @@ app.get('/api/admin/users', verifyToken, async (req, res) => {
   res.json(users);
 });
 
-app.put('/api/admin/users/:id/toggle-status', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const target = await User.findById(req.params.id);
-  if (!target) return res.status(404).json({ error: '用户不存在' });
-  target.status = target.status === 'active' ? 'banned' : 'active';
-  await target.save();
-  res.json({ message: '状态已更改' });
-});
-
-app.put('/api/admin/handlers/:id/toggle-status', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const target = await User.findById(req.params.id);
-  if (!target || target.role !== 'handler') return res.status(400).json({ error: '无效打手' });
-  target.handlerStatus = target.handlerStatus === 'idle' ? 'busy' : 'idle';
-  await target.save();
-  res.json({ message: '接单状态已切换' });
-});
-
-app.post('/api/admin/handlers', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const { username, phone, game } = req.body;
-  const hashed = await bcrypt.hash('123456', 10);
-  const handler = new User({ username, password: hashed, role: 'handler', phone, game, balance: 0 });
-  await handler.save();
-  res.json({ message: '打手添加成功', password: '123456' });
-});
-
-// ---------- 公告 ----------
-let announceText = '欢迎使用 QW电竞护航平台！';
-app.get('/api/announce', (req, res) => {
-  res.json({ announce: announceText });
-});
-
-app.put('/api/admin/announce', verifyToken, async (req, res) => {
-  const user = await User.findById(req.userId);
-  if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
-  const { content } = req.body;
-  announceText = content;
-  res.json({ message: '公告已更新' });
+// ---------- 根路由返回前端页面 ----------
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ---------- 启动服务器 ----------
