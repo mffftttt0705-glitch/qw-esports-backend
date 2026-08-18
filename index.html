@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>QW电竞 · 护航平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== 全局样式 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
+        }
+        body {
+            background: #0b0d15;
+            background-image: radial-gradient(ellipse at 20% 50%, #141a2b 0%, #07090f 100%);
+            color: #e0e6f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+        .app-wrapper {
+            max-width: 480px;
+            width: 100%;
+            background: rgba(14, 18, 30, 0.80);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(60, 160, 255, 0.08);
+            overflow: hidden;
+            position: relative;
+            padding-bottom: 72px;
+            min-height: 700px;
+        }
+        .view-container {
+            padding: 20px 20px 16px;
+        }
+        .view {
+            display: none;
+            animation: fadeUp 0.3s ease;
+        }
+        .view.active {
+            display: block;
+        }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* ===== 顶部品牌栏 ===== */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(100, 200, 255, 0.06);
+            margin-bottom: 20px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(145deg, #00c8ff, #0055ff);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+        }
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(to right, #b0e0ff, #7ac7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .brand-name small {
+            font-weight: 300;
+            font-size: 13px;
+            -webkit-text-fill-color: rgba(180, 210, 255, 0.6);
+            color: rgba(180, 210, 255, 0.6);
+        }
+        .header-right {
+            font-size: 13px;
+            color: #7a8faf;
+        }
+        .header-right i {
+            color: #3a7eff;
+        }
+        /* ===== 首页卡片 ===== */
+        .entry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 12px 0 16px;
+        }
+        .entry-card {
+            background: rgba(18, 24, 42, 0.7);
+            border-radius: 24px;
+            padding: 22px 12px 18px;
+            text-align: center;
+            border: 1px solid rgba(70, 150, 255, 0.06);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .entry-card:active {
+            transform: scale(0.95);
+        }
+        .entry-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 12px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            background: linear-gradient(145deg, #10182e, #1a2648);
+            color: #6ab0ff;
+        }
+        .entry-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e4edff;
+        }
+        .entry-sub {
+            font-size: 12px;
+            color: #7a8faf;
+        }
+        .entry-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 3px 12px;
+            background: rgba(60, 160, 255, 0.08);
+            border-radius: 30px;
+            font-size: 10px;
+            color: #6a9fd6;
+            border: 1px solid rgba(60, 160, 255, 0.06);
+        }
+        /* ===== 通用列表 ===== */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #d0e4ff;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title i {
+            color: #3a7eff;
+        }
+        .list-item {
+            background: rgba(18, 24, 42, 0.5);
+            border-radius: 20px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(70, 150, 255, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .list-item .left .name {
+            font-weight: 500;
+            color: #e4edff;
+            font-size: 15px;
+        }
+        .list-item .left .desc {
+            font-size: 12px;
+            color: #7a8faf;
+        }
+        .list-item .right .price {
+            font-weight: 600;
+            color: #69db7c;
+            font-size: 16px;
+        }
+        .list-item .right .tag {
+            font-size: 11px;
+            background: rgba(60, 160, 255, 0.1);
+            padding: 2px 12px;
+            border-radius: 30px;
+            color: #6ab0ff;
+        }
+        .btn-primary {
+            background: linear-gradient(145deg, #1a6aff, #0044cc);
+            border: none;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 80, 255, 0.2);
+        }
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(60, 160, 255, 0.2);
+            color: #b0c8e6;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .btn-success {
+            background: #22c55e;
+            color: #fff;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-warning {
+            background: #f59e0b;
+            color: #0b0d10;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        /* ===== 底部导航 ===== */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: rgba(10, 14, 26, 0.85);
+            backdrop-filter: blur(16px);
+            padding: 8px 0 12px;
+            border-top: 1px solid rgba(100, 200, 255, 0.06);
+            border-radius: 0 0 40px 40px;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: #5a6f8f;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 30px;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+        .nav-item i {
+            font-size: 20px;
+        }
+        .nav-item.active {
+            color: #b8dcff;
+        }
+        .nav-item.active i {
+            color: #3a7eff;
+            text-shadow: 0 0 20px rgba(0, 80, 255, 0.3);
+        }
+        /* ===== 密码弹窗 ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: rgba(18, 26, 48, 0.95);
+            border: 1px solid rgba(60, 160, 255, 0.15);
+            border-radius: 32px;
+            padding: 32px 28px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+            animation: fadeUp 0.25s ease;
+        }
+        .modal-box h2 {
+            font-size: 22px;
+            color: #d0e4ff;
+        }
+        .modal-box p {
+            color: #7a8faf;
+            font-size: 14px;
+            margin: 6px 0 20px;
+        }
+        .modal-box input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 60px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(60, 160, 255, 0.15);
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 12px;
+        }
+        .modal-box input:focus {
+            border-color: #3a7eff;
+        }
+        .modal-box .btn-row {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-box .btn-row button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 60px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-confirm {
+            background: linear-gradient(145deg, #1a6aff, #0044cc);
+            color: #fff;
+        }
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.06);
+            color: #a0b8d8;
+            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        }
+        .error-msg {
+            color: #ff6b6b;
+            font-size: 13px;
+            min-height: 20px;
+            margin-top: 4px;
+        }
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2630;
+            padding: 12px 28px;
+            border-radius: 40px;
+            z-index: 9999;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            border-left: 4px solid #22c55e;
+            color: #e8e6e3;
+            font-size: 14px;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show {
+            display: block;
+            animation: fadeUp 0.3s ease;
+        }
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+        .toast.warning {
+            border-left-color: #f59e0b;
+        }
+        /* ===== 订单状态标签 ===== */
+        .status-badge {
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            font-weight: 500;
+        }
+        .status-pending {
+            background: #f59e0b22;
+            color: #f59e0b;
+            border: 1px solid #f59e0b44;
+        }
+        .status-ongoing {
+            background: #3b82f622;
+            color: #3b82f6;
+            border: 1px solid #3b82f644;
+        }
+        .status-review {
+            background: #a855f722;
+            color: #a855f7;
+            border: 1px solid #a855f744;
+        }
+        .status-completed {
+            background: #22c55e22;
+            color: #22c55e;
+            border: 1px solid #22c55e44;
+        }
+        .status-canceled {
+            background: #6b728022;
+            color: #9ca3af;
+            border: 1px solid #6b728044;
+        }
+        .status-rejected {
+            background: #ef444422;
+            color: #ef4444;
+            border: 1px solid #ef444444;
+        }
+        .status-onsale {
+            background: #22c55e22;
+            color: #22c55e;
+            border: 1px solid #22c55e44;
+        }
+        .status-soldout {
+            background: #6b728022;
+            color: #9ca3af;
+            border: 1px solid #6b728044;
+        }
+        .status-settled {
+            background: #a855f722;
+            color: #a855f7;
+            border: 1px solid #a855f744;
+        }
+        .status-bought {
+            background: #a855f722;
+            color: #a855f7;
+            border: 1px solid #a855f744;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #5a6378;
+        }
+        .empty-state i {
+            font-size: 44px;
+            opacity: 0.4;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .empty-state p {
+            font-size: 15px;
+        }
+        .promo-badge {
+            display: inline-block;
+            background: #f5c84222;
+            color: #f5c842;
+            border: 1px solid #f5c84244;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 11px;
+            margin-right: 6px;
+        }
+        .role-view {
+            display: none;
+        }
+        .role-view.active {
+            display: block;
+        }
+        .hidden {
+            display: none !important;
+        }
+        @media (max-width: 420px) {
+            .app-wrapper {
+                border-radius: 28px;
+                padding-bottom: 66px;
+            }
+            .view-container {
+                padding: 16px 14px;
+            }
+            .entry-grid {
+                gap: 12px;
+            }
+            .entry-card {
+                padding: 18px 8px;
+            }
+            .entry-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 22px;
+            }
+            .entry-title {
+                font-size: 14px;
+            }
+            .bottom-nav {
+                padding: 6px 0 10px;
+            }
+            .nav-item i {
+                font-size: 18px;
+            }
+            .nav-item span {
+                font-size: 10px;
+            }
+        }
+        /* ===== 登录界面 ===== */
+        #authPage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            text-align: center;
+            padding: 20px;
+        }
+        #authPage .logo {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f5c842, #dbaa2a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+        #authPage .logo i {
+            font-size: 40px;
+            color: #f5c842;
+            -webkit-text-fill-color: #f5c842;
+            margin-right: 10px;
+        }
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .auth-buttons .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 14px;
+            font-size: 16px;
+        }
+        .auth-link {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #5a6378;
+        }
+        .auth-link span {
+            color: #f5c842;
+            cursor: pointer;
+        }
+        .auth-modal .modal-box {
+            max-width: 400px;
+        }
+        .auth-modal .form-group {
+            margin-bottom: 14px;
+            text-align: left;
+        }
+        .auth-modal .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #b0b8c8;
+            margin-bottom: 4px;
+        }
+        .auth-modal .form-group input,
+        .auth-modal .form-group select {
+            width: 100%;
+            background: #0b0d10;
+            border: 1px solid #2a2f3a;
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #e8e6e3;
+            font-size: 14px;
+            outline: none;
+        }
+        .auth-modal .form-group input:focus {
+            border-color: #f5c842;
+        }
+        .auth-modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+        .auth-modal .modal-actions .btn {
+            flex: 1;
+        }
+        .diamond-icon {
+            color: #f5c842;
+            margin-right: 4px;
+        }
+        .recharge-option {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 4px;
+            border: 1px solid #2a2f3a;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .recharge-option:hover {
+            border-color: #f5c842;
+            background: #1f2630;
+        }
+        .recharge-option.selected {
+            border-color: #f5c842;
+            background: #f5c84222;
+        }
+        .mail-item {
+            padding: 10px;
+            border-bottom: 1px solid #1f2630;
+        }
+        .mail-item .mail-title {
+            font-weight: 600;
+        }
+        .mail-item .mail-time {
+            font-size: 12px;
+            color: #8892a8;
+        }
+        .chat-messages {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 8px 0;
+            border-top: 1px solid #2a2f3a;
+            border-bottom: 1px solid #2a2f3a;
+            margin: 8px 0;
+        }
+        .chat-msg {
+            padding: 6px 10px;
+            margin: 4px 0;
+            border-radius: 12px;
+            max-width: 85%;
+            word-break: break-word;
+        }
+        .chat-msg.boss {
+            background: #1a2a4a;
+            color: #b0c8e6;
+            align-self: flex-start;
+        }
+        .chat-msg.handler {
+            background: #2a4a2a;
+            color: #b0e6b0;
+            align-self: flex-end;
+        }
+        .chat-msg.system {
+            background: #3a3a4a;
+            color: #d0d0e0;
+            align-self: center;
+            font-style: italic;
+        }
+        .chat-msg .time {
+            font-size: 10px;
+            color: #8892a8;
+            margin-left: 8px;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1px solid #2a2f3a;
+            background: #0b0d10;
+            color: #e8e6e3;
+            outline: none;
+        }
+        .chat-input-area input:focus {
+            border-color: #f5c842;
+        }
+        .chat-readonly {
+            opacity: 0.6;
+        }
+        .chat-readonly .chat-input-area input {
+            pointer-events: none;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #1f2630;
+        }
+        .detail-row .label {
+            color: #8892a8;
+        }
+        .detail-row .value {
+            color: #e8e6e3;
+            font-weight: 500;
+        }
+        .admin-card {
+            background: rgba(18, 24, 42, 0.5);
+            border-radius: 20px;
+            padding: 18px 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(70, 150, 255, 0.04);
+        }
+        .admin-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #d0e4ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .admin-card-title i {
+            color: #f5c842;
+        }
+        .tab-page {
+            display: none;
+        }
+        .tab-page.active {
+            display: block;
+        }
+        .admin-form-group {
+            margin-bottom: 14px;
+        }
+        .admin-form-group label {
+            display: block;
+            font-size: 13px;
+            color: #b0b8c8;
+            margin-bottom: 4px;
+        }
+        .admin-form-group label i {
+            margin-right: 6px;
+            color: #f5c842;
+            width: 18px;
+        }
+        .admin-form-control {
+            width: 100%;
+            background: #0b0d10;
+            border: 1px solid #2a2f3a;
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #e8e6e3;
+            font-size: 14px;
+            outline: none;
+        }
+        .admin-form-control:focus {
+            border-color: #f5c842;
+        }
+        .admin-form-control::placeholder {
+            color: #5a6378;
+        }
+        select.admin-form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238892a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 38px;
+        }
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .action-group {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 登录/注册界面 ===== -->
+    <div id="authPage">
+        <div class="logo"><i class="fas fa-crosshairs"></i> QW电竞</div>
+        <div style="font-size:16px; color:#8892a8; margin-bottom:30px;">护航平台 · 暗区突围 / 三角洲</div>
+        <div class="auth-buttons">
+            <button class="btn btn-primary" onclick="showRegister('boss')"><i class="fas fa-user-plus"></i> 注册老板账号</button>
+            <button class="btn btn-success" onclick="showRegister('handler')"><i class="fas fa-gamepad"></i> 注册打手账号</button>
+            <button class="btn btn-warning" onclick="showLogin()"><i class="fas fa-sign-in-alt"></i> 登录</button>
+        </div>
+        <div class="auth-link">
+            已有账号？<span onclick="showLogin()">立即登录</span>
+        </div>
+    </div>
+
+    <!-- ===== 模态框（通用） ===== -->
+    <div class="modal-overlay auth-modal" id="authModal">
+        <div class="modal-box" id="authModalContent"></div>
+    </div>
+
+    <!-- ===== 聊天模态框 ===== -->
+    <div class="modal-overlay chat-modal" id="chatModal">
+        <div class="modal-box" id="chatModalContent"></div>
+    </div>
+
+    <!-- ===== 订单详情模态框 ===== -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-box" id="detailModalContent"></div>
+    </div>
+
+    <!-- ===== 充值模态框 ===== -->
+    <div class="modal-overlay" id="rechargeModal">
+        <div class="modal-box" id="rechargeModalContent"></div>
+    </div>
+
+    <!-- ===== 邮件模态框 ===== -->
+    <div class="modal-overlay" id="mailModal">
+        <div class="modal-box" id="mailModalContent"></div>
+    </div>
+
+    <!-- ===== 主应用 ===== -->
+    <div id="mainApp" class="app-wrapper hidden">
+        <div class="view-container">
+            <!-- 头部 -->
+            <div class="app-header">
+                <div class="brand">
+                    <div class="brand-icon">QW</div>
+                    <span class="brand-name">电竞 <small>· 护航</small></span>
+                </div>
+                <div class="header-right" id="headerUserDisplay">
+                    <i class="fas fa-user"></i> <span id="currentUserDisplay">未登录</span>
+                    <button class="btn btn-outline btn-sm" onclick="logout()" style="margin-left:8px;padding:2px 10px;font-size:11px;">退出</button>
+                </div>
+            </div>
+
+            <!-- 管理员视图 -->
+            <div class="role-view" id="role-admin">
+                <div class="tab-nav" style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;overflow-x:auto;">
+                    <button class="active" data-tab="tab-dashboard"><i class="fas fa-chart-pie"></i> 仪表盘</button>
+                    <button data-tab="tab-products"><i class="fas fa-boxes"></i> 商品管理</button>
+                    <button data-tab="tab-orders"><i class="fas fa-list-ul"></i> 订单管理</button>
+                    <button data-tab="tab-recharges"><i class="fas fa-coins"></i> 充值管理</button>
+                    <button data-tab="tab-users"><i class="fas fa-users"></i> 用户管理</button>
+                </div>
+
+                <div class="tab-page active" id="tab-dashboard">
+                    <div class="admin-card">
+                        <div class="admin-card-title"><i class="fas fa-chart-simple"></i> 数据概览</div>
+                        <div id="statsGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;"></div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="admin-card-title"><i class="fas fa-bullhorn"></i> 公告</div>
+                        <div id="dashboardAnnounce" style="color:#b0b8c8;font-size:14px;"></div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="admin-card-title"><i class="fas fa-clock"></i> 最近订单</div>
+                        <div id="recentOrdersList"></div>
+                    </div>
+                </div>
+
+                <div class="tab-page" id="tab-products">
+                    <div class="admin-card">
+                        <div class="admin-card-title"><i class="fas fa-filter"></i> 商品列表</div>
+                        <div id="productsList"></div>
+                    </div>
+                    <div class="admin-card" style="border-left:4px solid #22c55e;">
+                        <div class="admin-card-title"><i class="fas fa-plus-circle" style="color:#22c55e;"></i> 上架新商品</div>
+                        <div class="admin-form-group">
+                            <label><i class="fas fa-gamepad"></i> 游戏</label>
+                            <select class="admin-form-control" id="prodGame">
+                                <option value="暗区突围">暗区突围</option>
+                                <option value="三角洲">三角洲</option>
+                            </select>
+                        </div>
+                        <div class="admin-form-group">
+                            <label><i class="fas fa-tag"></i> 标题</label>
+                            <input class="admin-form-control" id="prodTitle" placeholder="如：大师护航">
+                        </div>
+                        <div class="admin-form-group">
+                            <label><i class="fas fa-align-left"></i> 描述</label>
+                            <textarea class="admin-form-control" id="prodDesc" rows="2" placeholder="服务详情"></textarea>
+                        </div>
+                        <div class="admin-form-group">
+                            <label><i class="fas fa-yen-sign"></i> 价格</label>
+                            <input class="admin-form-control" id="prodPrice" type="number" placeholder="288">
+                        </div>
+                        <div class="admin-form-group">
+                            <label><i class="fas fa-boxes"></i> 库存</label>
+                            <input class="admin-form-control" id="prodQuantity" type="number" placeholder="1" value="1">
+                        </div>
+                        <button class="btn btn-success" onclick="shelfProduct()"><i class="fas fa-upload"></i> 上架商品</button>
+                    </div>
+                </div>
+
+                <div class="tab-page" id="tab-orders">
+                    <div class="admin-card">
+                        <div class="admin-card-title"><i class="fas fa-filter"></i> 所有订单</div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                            <select class="admin-form-control" id="filterOrderStatus" style="width:140px;padding:6px 12px;" onchange="renderAdminOrders()">
+                                <option value="all">全部</option>
+                                <option value="pending">待接单</option>
+                                <option value="ongoing">进行中</option>
+                                <option value="review">待验收</option>
+                                <option value="completed">已完成</option>
+                                <option value="canceled">已取消</option>
+                                <option value="rejected">已驳回</option>
+                            </select>
+                            <button class="btn btn-outline btn-sm" onclick="renderAdminOrders()"><i class="fas fa-sync"></i> 刷新</button>
+                        </div>
+                        <div id="adminOrdersList"></div>
+                    </div>
+                </div>
+
+                <div class="tab-page" id="tab-recharges">
+                    <div class="admin-card">
+                        <div class="admin-card-title"><i class="fas fa-coins"></i> 充值申请</div>
+                        <div id="rechargeList"></div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="admin-card-title"><i class="fas fa-gift"></i> 赠送红钻</div>
+                        <div class="admin-form-group">
+                            <label>选择老板</label>
+                            <select class="admin-form-control" id="giftUser"></select>
+                        </div>
+                        <div class="admin-form-group">
+                            <label>红钻数量</label>
+                            <input class="admin-form-control" id="giftAmount" type="number" placeholder="数量">
+                        </div>
+                        <button class="btn btn-primary" onclick="sendGift()"><i class="fas fa-gift"></i> 赠送</button>
+                    </div>
+                </div>
+
+                <div class="tab-page" id="tab-users">
+                    <div class="admin-card">
+                        <div class="admin-card-title"><i class="fas fa-user-tie"></i> 打手管理</div>
+                        <div id="handlersList"></div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="admin-card-title"><i class="fas fa-user"></i> 老板管理</div>
+                        <div id="bossesList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 老板视图 -->
+            <div class="role-view" id="role-boss">
+                <div class="card" style="background:linear-gradient(135deg,#1a2a4a,#0b0d15);border:1px solid #f5c84244;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                        <div>
+                            <div style="font-size:14px;color:#8892a8;">红钻余额</div>
+                            <div style="font-size:28px;font-weight:700;color:#f5c842;" id="bossDiamond">0</div>
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn btn-warning btn-sm" onclick="openRecharge()"><i class="fas fa-plus-circle"></i> 充值</button>
+                            <button class="btn btn-primary btn-sm" onclick="openMail()"><i class="fas fa-envelope"></i> 邮件 <span id="unreadMailCount" class="badge" style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:30px;font-size:11px;">0</span></button>
+                        </div>
+                    </div>
+                    <div style="font-size:13px;color:#8892a8;margin-top:4px;">1元 = 10红钻</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-shopping-cart"></i> 可购买护航 <span class="badge" id="bossProductCount">0</span></div>
+                    <div id="bossProductList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-history"></i> 我的订单</div>
+                    <div id="bossMyOrders"></div>
+                </div>
+            </div>
+
+            <!-- 打手视图 -->
+            <div class="role-view" id="role-handler">
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-wallet"></i> 我的余额</div>
+                    <div style="font-size:24px;font-weight:700;color:#69db7c;" id="handlerBalance">¥0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-clock"></i> 待接单 <span class="badge" id="handlerPendingCount">0</span></div>
+                    <div id="handlerPendingList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-check-circle"></i> 已接单 / 进行中</div>
+                    <div id="handlerOngoingList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-check-double"></i> 已完成订单</div>
+                    <div id="handlerCompletedList"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <button class="nav-item active" data-target="home"><i class="fas fa-home"></i><span>首页</span></button>
+            <button class="nav-item" data-target="boss" id="navBoss"><i class="fas fa-shopping-cart"></i><span>商城</span></button>
+            <button class="nav-item" data-target="handler" id="navHandler"><i class="fas fa-gamepad"></i><span>打手</span></button>
+            <button class="nav-item" data-target="admin" id="navAdmin"><i class="fas fa-user-cog"></i><span>管理</span></button>
+        </div>
+    </div>
+
+    <!-- ===== Toast 提示 ===== -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ============================================================
+        //  配置
+        // ============================================================
+        const API_URL = 'https://qw-esports-backend.vercel.app/api';
+        // 如果后端地址变了，只改上面这一行就行
+
+        // ============================================================
+        //  工具函数
+        // ============================================================
+        function toast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast show' + (type === 'error' ? ' error' : type === 'warning' ? ' warning' : '');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function statusText(s) {
+            const map = {
+                'pending': '待接单',
+                'ongoing': '进行中',
+                'review': '待验收',
+                'completed': '已完成',
+                'canceled': '已取消',
+                'rejected': '已驳回',
+                'onsale': '已上架',
+                'soldout': '已售罄'
+            };
+            return map[s] || s;
+        }
+
+        function statusClass(s) {
+            return 'status-' + s;
+        }
+
+        function now() {
+            return new Date().toLocaleString('zh-CN', { hour12: false });
+        }
+
+        let currentUser = null;
+        let token = localStorage.getItem('token');
+
+        // ============================================================
+        //  API 请求
+        // ============================================================
+        async function apiRequest(url, options = {}) {
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': token } : {}),
+                ...options.headers
+            };
+            const res = await fetch(API_URL + url, { ...options, headers });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || '请求失败');
+            }
+            return res.json();
+        }
+
+        // ============================================================
+        //  认证模块
+        // ============================================================
+        function showAuthModal(html) {
+            const modal = document.getElementById('authModal');
+            const content = document.getElementById('authModalContent');
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function showRegister(role) {
+            const roleText = { boss: '老板', handler: '打手' } [role] || '用户';
+            const html = `
+                <h3><i class="fas fa-user-plus"></i> 注册${roleText}账号</h3>
+                <p class="sub" style="color:#8892a8;font-size:14px;">填写信息后即可创建账号</p>
+                <div class="form-group"><label>用户名</label><input type="text" id="regUsername" placeholder="请输入用户名"></div>
+                <div class="form-group"><label>密码</label><input type="password" id="regPassword" placeholder="请输入密码"></div>
+                <div class="form-group"><label>联系方式（可选）</label><input type="text" id="regPhone" placeholder="手机号/微信"></div>
+                <div class="form-group"><label>主玩游戏（打手必填）</label><input type="text" id="regGame" placeholder="暗区突围 / 三角洲"></div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeAuthModal()">取消</button>
+                    <button class="btn btn-primary" onclick="doRegister('${role}')">注册</button>
+                </div>
+            `;
+            showAuthModal(html);
+        }
+
+        async function doRegister(role) {
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const game = document.getElementById('regGame').value.trim();
+            if (!username || !password) return toast('请填写完整信息', 'error');
+            try {
+                const data = await apiRequest('/register', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password, role, phone, game })
+                });
+                closeAuthModal();
+                toast('注册成功，请登录', 'success');
+                showLogin();
+            } catch (err) {
+                toast(err.message, 'error');
+            }
+        }
+
+        function showLogin() {
+            const html = `
+                <h3><i class="fas fa-sign-in-alt"></i> 登录</h3>
+                <p class="sub" style="color:#8892a8;font-size:14px;">输入用户名和密码</p>
+                <div class="form-group"><label>用户名</label><input type="text" id="loginUsername" placeholder="请输入用户名"></div>
+                <div class="form-group"><label>密码</label><input type="password" id="loginPassword" placeholder="请输入密码"></div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeAuthModal()">取消</button>
+                    <button class="btn btn-primary" onclick="doLogin()">登录</button>
+                </div>
+                <div style="text-align:center;margin-top:12px;font-size:13px;color:#5a6378;">
+                    还没有账号？<span style="color:#f5c842;cursor:pointer;" onclick="closeAuthModal();showRegister('boss')">立即注册</span>
+                </div>
+            `;
+            showAuthModal(html);
+        }
+
+        async function doLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            if (!username || !password) return toast('请填写完整', 'error');
+            try {
+                const data = await apiRequest('/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password })
+                });
+                token = data.token;
+                localStorage.setItem('token', token);
+                currentUser = data.user;
+                closeAuthModal();
+                document.getElementById('authPage').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('currentUserDisplay').textContent = currentUser.username + ' (' + currentUser.role +
+                    ')';
+                // 显示对应角色视图
+                document.querySelectorAll('.role-view').forEach(v => v.classList.remove('active'));
+                const roleView = document.getElementById('role-' + currentUser.role);
+                if (roleView) roleView.classList.add('active');
+                // 显示底部导航
+                document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+                if (currentUser.role === 'admin') {
+                    document.getElementById('navAdmin').classList.add('active');
+                    renderAdminAll();
+                } else if (currentUser.role === 'boss') {
+                    document.getElementById('navBoss').classList.add('active');
+                    renderBossView();
+                } else if (currentUser.role === 'handler') {
+                    document.getElementById('navHandler').classList.add('active');
+                    renderHandlerView();
+                }
+                toast('欢迎回来，' + username, 'success');
+            } catch (err) {
+                toast(err.message, 'error');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            token = null;
+            currentUser = null;
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('authPage').classList.remove('hidden');
+            document.getElementById('currentUserDisplay').textContent = '未登录';
+            toast('已退出', 'warning');
+        }
+
+        // ============================================================
+        //  Tab 切换（管理员）
+        // ============================================================
+        document.querySelectorAll('.tab-nav button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-nav button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+                document.getElementById(this.dataset.tab).classList.add('active');
+                const tab = this.dataset.tab;
+                if (tab === 'tab-dashboard') renderDashboard();
+                else if (tab === 'tab-products') renderProducts();
+                else if (tab === 'tab-orders') renderAdminOrders();
+                else if (tab === 'tab-recharges') renderRecharges();
+                else if (tab === 'tab-users') renderUsers();
+            });
+        });
+
+        // ============================================================
+        //  管理员渲染
+        // ============================================================
+        async function renderAdminAll() {
+            await renderDashboard();
+            await renderProducts();
+            await renderAdminOrders();
+            await renderRecharges();
+            await renderUsers();
+            await populateGiftUsers();
+        }
+
+        async function renderDashboard() {
+            try {
+                const products = await apiRequest('/admin/products');
+                const orders = await apiRequest('/admin/orders');
+                const total = orders.length;
+                const pending = orders.filter(o => o.status === 'pending').length;
+                const ongoing = orders.filter(o => o.status === 'ongoing').length;
+                const completed = orders.filter(o => o.status === 'completed').length;
+                const totalAmount = orders.reduce((s, o) => s + o.price || 0, 0);
+                const stats = [
+                    { label: '总订单', value: total, icon: 'fa-ticket-alt' },
+                    { label: '待接单', value: pending, icon: 'fa-clock', color: '#f59e0b' },
+                    { label: '进行中', value: ongoing, icon: 'fa-play', color: '#3b82f6' },
+                    { label: '已完成', value: completed, icon: 'fa-check-circle', color: '#22c55e' },
+                    { label: '商品数', value: products.filter(p => !p.hidden).length, icon: 'fa-boxes' },
+                    { label: '总金额', value: '¥' + totalAmount, icon: 'fa-coins', color: '#f5c842' },
+                ];
+                const grid = document.getElementById('statsGrid');
+                grid.innerHTML = stats.map(s =>
+                    `<div class="admin-card" style="padding:12px;text-align:center;margin:0;">
+                        <div style="font-size:20px;color:${s.color||'#d0e4ff'}"><i class="fas ${s.icon}"></i></div>
+                        <div style="font-size:22px;font-weight:700;">${s.value}</div>
+                        <div style="font-size:12px;color:#8892a8;">${s.label}</div>
+                    </div>`
+                ).join('');
+                document.getElementById('dashboardAnnounce').textContent = '欢迎使用 QW电竞护航平台！';
+                const recent = orders.slice(0, 5);
+                const container = document.getElementById('recentOrdersList');
+                if (recent.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无订单</p></div>';
+                    return;
+                }
+                let html = '<div class="table-wrap"><table style="width:100%;font-size:13px;"><thead><tr><th>订单号</th><th>金额</th><th>状态</th></tr></thead><tbody>';
+                recent.forEach(o => {
+                    html += `<tr><td>${o.id}</td><td>¥${o.price}</td><td><span class="status-badge ${statusClass(o.status)}">${statusText(o.status)}</span></td></tr>`;
+                });
+                html += '</tbody></table></div>';
+                container.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function renderProducts() {
+            try {
+                const products = await apiRequest('/admin/products');
+                const container = document.getElementById('productsList');
+                if (products.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><p>暂无商品</p></div>';
+                    return;
+                }
+                let html = '<div class="table-wrap"><table style="width:100%;font-size:13px;"><thead><tr><th>标题</th><th>价格</th><th>库存</th><th>状态</th></tr></thead><tbody>';
+                products.forEach(p => {
+                    const remaining = p.quantity - p.sold;
+                    const statusText2 = remaining > 0 ? '在售' : '已售罄';
+                    const statusCls = remaining > 0 ? 'status-onsale' : 'status-soldout';
+                    html +=
+                        `<tr><td>${p.title}</td><td>¥${p.price}</td><td>${p.sold}/${p.quantity}</td><td><span class="status-badge ${statusCls}">${statusText2}</span></td></tr>`;
+                });
+                html += '</tbody></table></div>';
+                container.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function shelfProduct() {
+            const game = document.getElementById('prodGame').value;
+            const title = document.getElementById('prodTitle').value.trim();
+            const desc = document.getElementById('prodDesc').value.trim();
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const quantity = parseInt(document.getElementById('prodQuantity').value) || 1;
+            if (!title || !price) return toast('请填写完整信息', 'error');
+            try {
+                await apiRequest('/admin/products', {
+                    method: 'POST',
+                    body: JSON.stringify({ game, title, desc, price, quantity })
+                });
+                toast('商品上架成功', 'success');
+                document.getElementById('prodTitle').value = '';
+                document.getElementById('prodDesc').value = '';
+                document.getElementById('prodPrice').value = '';
+                renderProducts();
+            } catch (err) {
+                toast(err.message, 'error');
+            }
+        }
+
+        async function renderAdminOrders() {
+            try {
+                const orders = await apiRequest('/admin/orders');
+                const container = document.getElementById('adminOrdersList');
+                if (orders.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无订单</p></div>';
+                    return;
+                }
+                let html = '<div class="table-wrap"><table style="width:100%;font-size:13px;"><thead><tr><th>订单号</th><th>标题</th><th>金额</th><th>状态</th><th>操作</th></tr></thead><tbody>';
+                orders.forEach(o => {
+                    let actions = '';
+                    if (o.status === 'pending') {
+                        actions +=
+                            `<button class="btn btn-success btn-xs" onclick="adminAssignHandler('${o.id}')">指派</button>`;
+                    }
+                    if (o.status === 'ongoing') {
+                        actions +=
+                            `<button class="btn btn-warning btn-xs" onclick="adminForceComplete('${o.id}')">强制完成</button>`;
+                    }
+                    if (o.status === 'review') {
+                        actions +=
+                            `<button class="btn btn-success btn-xs" onclick="adminConfirmComplete('${o.id}')">确认完成</button>`;
+                        actions +=
+                            `<button class="btn btn-danger btn-xs" onclick="adminRejectOrder('${o.id}')">驳回</button>`;
+                    }
+                    if (o.status === 'completed') {
+                        actions +=
+                            `<button class="btn btn-primary btn-xs" onclick="adminSettleOrder('${o.id}')">结算</button>`;
+                    }
+                    if (o.status !== 'completed' && o.status !== 'canceled' && o.status !== 'rejected') {
+                        actions +=
+                            `<button class="btn btn-danger btn-xs" onclick="adminCancelOrder('${o.id}')">取消</button>`;
+                    }
+                    html +=
+                        `<tr><td>${o.id}</td><td>${o.title}</td><td>¥${o.price}</td><td><span class="status-badge ${statusClass(o.status)}">${statusText(o.status)}</span></td><td><div class="action-group">${actions}</div></td></tr>`;
+                });
+                html += '</tbody></table></div>';
+                container.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ============================================================
+        //  管理员操作（调用后端 API）
+        // ============================================================
+        window.adminAssignHandler = function(orderId) {
+            const handlerId = prompt('请输入打手ID：');
+            if (!handlerId) return;
+            apiRequest('/admin/orders/' + orderId + '/assign', {
+                method: 'PUT',
+                body: JSON.stringify({ handlerId })
+            }).then(() => {
+                toast('指派成功', 'success');
+                renderAdminOrders();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        window.adminForceComplete = function(orderId) {
+            if (!confirm('确认强制完成此订单？')) return;
+            apiRequest('/admin/orders/' + orderId + '/force-complete', {
+                method: 'PUT'
+            }).then(() => {
+                toast('强制完成成功', 'success');
+                renderAdminOrders();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        window.adminConfirmComplete = function(orderId) {
+            if (!confirm('确认验收通过？')) return;
+            apiRequest('/admin/orders/' + orderId + '/confirm', {
+                method: 'PUT'
+            }).then(() => {
+                toast('验收通过', 'success');
+                renderAdminOrders();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        window.adminRejectOrder = function(orderId) {
+            const reason = prompt('请输入驳回原因：');
+            if (reason === null) return;
+            apiRequest('/admin/orders/' + orderId + '/reject', {
+                method: 'PUT',
+                body: JSON.stringify({ reason })
+            }).then(() => {
+                toast('已驳回', 'warning');
+                renderAdminOrders();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        window.adminCancelOrder = function(orderId) {
+            if (!confirm('确认取消此订单？')) return;
+            apiRequest('/admin/orders/' + orderId + '/cancel', {
+                method: 'PUT'
+            }).then(() => {
+                toast('已取消', 'warning');
+                renderAdminOrders();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        window.adminSettleOrder = function(orderId) {
+            const earning = prompt('请输入打手收入金额（元）：');
+            if (!earning) return;
+            apiRequest('/admin/orders/' + orderId + '/settle', {
+                method: 'PUT',
+                body: JSON.stringify({ earning: parseFloat(earning) })
+            }).then(() => {
+                toast('结算成功', 'success');
+                renderAdminOrders();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        // ============================================================
+        //  充值管理
+        // ============================================================
+        async function renderRecharges() {
+            try {
+                const recharges = await apiRequest('/admin/recharges');
+                const container = document.getElementById('rechargeList');
+                if (recharges.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-coins"></i><p>暂无充值申请</p></div>';
+                    return;
+                }
+                let html = '<div class="table-wrap"><table style="width:100%;font-size:13px;"><thead><tr><th>用户</th><th>金额</th><th>红钻</th><th>状态</th><th>操作</th></tr></thead><tbody>';
+                recharges.forEach(r => {
+                    const statusText2 = r.status === 'pending' ? '待审核' : r.status === 'approved' ? '已通过' :
+                        '已拒绝';
+                    const statusCls = r.status === 'pending' ? 'status-pending' : r.status === 'approved' ?
+                        'status-onsale' : 'status-canceled';
+                    let actions = '';
+                    if (r.status === 'pending') {
+                        actions +=
+                            `<button class="btn btn-success btn-xs" onclick="approveRecharge('${r.id}')">通过</button>`;
+                        actions +=
+                            `<button class="btn btn-danger btn-xs" onclick="rejectRecharge('${r.id}')">拒绝</button>`;
+                    }
+                    html +=
+                        `<tr><td>${r.userId}</td><td>¥${r.amount}</td><td>${r.diamond}</td><td><span class="status-badge ${statusCls}">${statusText2}</span></td><td>${actions}</td></tr>`;
+                });
+                html += '</tbody></table></div>';
+                container.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.approveRecharge = function(rechargeId) {
+            apiRequest('/admin/recharges/' + rechargeId + '/approve', {
+                method: 'PUT'
+            }).then(() => {
+                toast('审核通过，已发送邮件', 'success');
+                renderRecharges();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        window.rejectRecharge = function(rechargeId) {
+            apiRequest('/admin/recharges/' + rechargeId + '/reject', {
+                method: 'PUT'
+            }).then(() => {
+                toast('已拒绝', 'warning');
+                renderRecharges();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        async function populateGiftUsers() {
+            try {
+                const users = await apiRequest('/admin/users');
+                const sel = document.getElementById('giftUser');
+                sel.innerHTML = '<option value="">-- 请选择 --</option>';
+                users.filter(u => u.role === 'boss').forEach(u => {
+                    sel.innerHTML += `<option value="${u.id}">${u.username}</option>`;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.sendGift = function() {
+            const targetUserId = document.getElementById('giftUser').value;
+            const amount = parseInt(document.getElementById('giftAmount').value);
+            if (!targetUserId || !amount) return toast('请选择老板并输入数量', 'error');
+            apiRequest('/admin/gift', {
+                method: 'POST',
+                body: JSON.stringify({ targetUserId, amount })
+            }).then(() => {
+                toast('赠送成功，已发送邮件', 'success');
+                document.getElementById('giftAmount').value = '';
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        // ============================================================
+        //  用户管理
+        // ============================================================
+        async function renderUsers() {
+            try {
+                const users = await apiRequest('/admin/users');
+                const handlers = users.filter(u => u.role === 'handler');
+                const bosses = users.filter(u => u.role === 'boss');
+                const hContainer = document.getElementById('handlersList');
+                if (handlers.length === 0) {
+                    hContainer.innerHTML = '<div class="empty-state"><i class="fas fa-users-slash"></i><p>暂无打手</p></div>';
+                } else {
+                    let html =
+                        '<div class="table-wrap"><table style="width:100%;font-size:13px;"><thead><tr><th>用户名</th><th>余额</th><th>状态</th></tr></thead><tbody>';
+                    handlers.forEach(h => {
+                        html +=
+                            `<tr><td>${h.username}</td><td>¥${h.balance || 0}</td><td><span class="status-badge ${h.status==='active'?'status-onsale':'status-canceled'}">${h.status==='active'?'正常':'封禁'}</span></td></tr>`;
+                    });
+                    html += '</tbody></table></div>';
+                    hContainer.innerHTML = html;
+                }
+                const bContainer = document.getElementById('bossesList');
+                if (bosses.length === 0) {
+                    bContainer.innerHTML = '<div class="empty-state"><i class="fas fa-user-slash"></i><p>暂无老板</p></div>';
+                } else {
+                    let html =
+                        '<div class="table-wrap"><table style="width:100%;font-size:13px;"><thead><tr><th>用户名</th><th>红钻</th><th>状态</th></tr></thead><tbody>';
+                    bosses.forEach(b => {
+                        html +=
+                            `<tr><td>${b.username}</td><td>${b.diamond || 0}</td><td><span class="status-badge ${b.status==='active'?'status-onsale':'status-canceled'}">${b.status==='active'?'正常':'封禁'}</span></td></tr>`;
+                    });
+                    html += '</tbody></table></div>';
+                    bContainer.innerHTML = html;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ============================================================
+        //  老板视图
+        // ============================================================
+        async function renderBossView() {
+            try {
+                const user = await apiRequest('/me');
+                document.getElementById('bossDiamond').textContent = user.diamond || 0;
+                // 未读邮件数
+                const mails = await apiRequest('/mails');
+                const unread = mails.filter(m => m.status === 'unread').length;
+                document.getElementById('unreadMailCount').textContent = unread;
+
+                const products = await apiRequest('/products');
+                document.getElementById('bossProductCount').textContent = products.length;
+                const container = document.getElementById('bossProductList');
+                if (products.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>暂无商品</p></div>';
+                    return;
+                }
+                let html = '';
+                products.forEach(p => {
+                    const remaining = p.quantity - p.sold;
+                    const diamondCost = p.price * 10;
+                    html += `
+                        <div class="card" style="padding:14px;border-left:3px solid ${remaining>0?'#f5c842':'transparent'};">
+                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                                <div>
+                                    <strong>${p.game} · ${p.title}</strong>
+                                    <span class="promo-badge" style="background:#22c55e22;border-color:#22c55e44;color:#22c55e;">平台担保</span>
+                                    <br>
+                                    <span style="font-size:13px;color:#8892a8;">剩余 ${remaining} 单</span><br>
+                                    <span style="font-size:13px;color:#b0b8c8;">${p.desc || ''}</span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <span style="font-size:20px;font-weight:700;color:#f5c842;">${diamondCost} <i class="fas fa-gem"></i></span><br>
+                                    <span style="font-size:12px;color:#8892a8;">¥${p.price}</span><br>
+                                    ${remaining > 0 ? `<button class="btn btn-success btn-sm" onclick="bossBuy('${p.id}')">购买</button>` : '<span class="status-badge status-soldout">已售罄</span>'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+
+                // 我的订单
+                const orders = await apiRequest('/orders/my');
+                const myContainer = document.getElementById('bossMyOrders');
+                if (orders.length === 0) {
+                    myContainer.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i><p>暂无订单</p></div>';
+                    return;
+                }
+                let html2 =
+                    '<div class="table-wrap"><table style="width:100%;font-size:13px;"><thead><tr><th>订单号</th><th>标题</th><th>金额</th><th>状态</th><th>操作</th></tr></thead><tbody>';
+                orders.forEach(o => {
+                    let actions = '';
+                    if (o.status === 'review') {
+                        actions +=
+                            `<button class="btn btn-success btn-xs" onclick="bossConfirmComplete('${o.id}')">确认完成</button>`;
+                    }
+                    actions +=
+                        `<button class="btn btn-primary btn-xs" onclick="openChat('${o.id}')">聊天</button>`;
+                    html2 +=
+                        `<tr><td>${o.id}</td><td>${o.title}</td><td>¥${o.price}</td><td><span class="status-badge ${statusClass(o.status)}">${statusText(o.status)}</span></td><td>${actions}</td></tr>`;
+                });
+                html2 += '</tbody></table></div>';
+                myContainer.innerHTML = html2;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.bossBuy = async function(productId) {
+            try {
+                const data = await apiRequest('/orders/buy', {
+                    method: 'POST',
+                    body: JSON.stringify({ productId })
+                });
+                toast('购买成功！订单号：' + data.orderId, 'success');
+                renderBossView();
+            } catch (err) {
+                toast(err.message, 'error');
+            }
+        };
+
+        window.bossConfirmComplete = function(orderId) {
+            if (!confirm('确认已完成此订单服务？')) return;
+            apiRequest('/orders/' + orderId + '/boss-confirm', {
+                method: 'PUT'
+            }).then(() => {
+                toast('已确认完成', 'success');
+                renderBossView();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        // ============================================================
+        //  打手视图
+        // ============================================================
+        async function renderHandlerView() {
+            try {
+                const user = await apiRequest('/me');
+                document.getElementById('handlerBalance').textContent = '¥' + (user.balance || 0);
+
+                const orders = await apiRequest('/orders/my');
+                // 待接单（所有 pending 订单）
+                const pending = orders.filter(o => o.status === 'pending');
+                document.getElementById('handlerPendingCount').textContent = pending.length;
+                const pContainer = document.getElementById('handlerPendingList');
+                if (pending.length === 0) {
+                    pContainer.innerHTML = '<div class="empty-state"><i class="fas fa-clock"></i><p>暂无待接单</p></div>';
+                } else {
+                    let html = '';
+                    pending.forEach(o => {
+                        html += `
+                            <div class="card" style="padding:14px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                                    <div><strong>${o.game} · ${o.title}</strong><br>
+                                    <span style="font-size:13px;color:#8892a8;">¥${o.price}</span></div>
+                                    <button class="btn btn-primary btn-sm" onclick="handlerTake('${o.id}')">接单</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    pContainer.innerHTML = html;
+                }
+
+                // 已接单
+                const ongoing = orders.filter(o => o.status === 'ongoing' || o.status === 'review');
+                const oContainer = document.getElementById('handlerOngoingList');
+                if (ongoing.length === 0) {
+                    oContainer.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><p>暂无进行中的订单</p></div>';
+                } else {
+                    let html = '';
+                    ongoing.forEach(o => {
+                        const statusText2 = o.status === 'ongoing' ? '进行中' : '待验收';
+                        const statusCls = o.status === 'ongoing' ? 'status-ongoing' : 'status-review';
+                        let actions = '';
+                        if (o.status === 'ongoing') {
+                            actions +=
+                                `<button class="btn btn-warning btn-sm" onclick="handlerSubmitComplete('${o.id}')">提交完成</button>`;
+                        }
+                        actions +=
+                            `<button class="btn btn-primary btn-sm" onclick="openChat('${o.id}')">聊天</button>`;
+                        html += `
+                            <div class="card" style="padding:14px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                                    <div><strong>${o.game} · ${o.title}</strong><br>
+                                    <span style="font-size:13px;color:#8892a8;">¥${o.price} ｜ 状态：<span class="status-badge ${statusCls}">${statusText2}</span></span></div>
+                                    ${actions}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    oContainer.innerHTML = html;
+                }
+
+                // 已完成
+                const completed = orders.filter(o => o.status === 'completed');
+                const cContainer = document.getElementById('handlerCompletedList');
+                if (completed.length === 0) {
+                    cContainer.innerHTML = '<div class="empty-state"><i class="fas fa-check-double"></i><p>暂无已完成订单</p></div>';
+                } else {
+                    let html = '';
+                    completed.forEach(o => {
+                        html += `
+                            <div class="card" style="padding:14px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                                    <div><strong>${o.game} · ${o.title}</strong><br>
+                                    <span style="font-size:13px;color:#8892a8;">¥${o.price} ｜ ${o.endTime || o.createTime}</span></div>
+                                    <button class="btn btn-primary btn-sm" onclick="openChat('${o.id}')">聊天</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    cContainer.innerHTML = html;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.handlerTake = function(orderId) {
+            apiRequest('/orders/' + orderId + '/take', {
+                method: 'PUT'
+            }).then(() => {
+                toast('接单成功', 'success');
+                renderHandlerView();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        window.handlerSubmitComplete = function(orderId) {
+            if (!confirm('确认已完成此订单服务？')) return;
+            apiRequest('/orders/' + orderId + '/submit-complete', {
+                method: 'PUT'
+            }).then(() => {
+                toast('已提交验收', 'success');
+                renderHandlerView();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        // ============================================================
+        //  充值
+        // ============================================================
+        const rechargeOptions = [
+            { amount: 1, diamond: 10 },
+            { amount: 6, diamond: 60 },
+            { amount: 68, diamond: 680 + 20 },
+            { amount: 128, diamond: 1280 + 50 },
+            { amount: 328, diamond: 3280 + 150 },
+            { amount: 648, diamond: 6480 + 320 }
+        ];
+
+        let selectedRecharge = null;
+
+        window.openRecharge = function() {
+            let optionsHtml = rechargeOptions.map(opt =>
+                `<div class="recharge-option" onclick="selectRecharge(this, ${opt.amount}, ${opt.diamond})">
+                    <div style="font-weight:600;font-size:16px;">¥${opt.amount}</div>
+                    <div style="font-size:12px;color:#8892a8;">${opt.diamond} 红钻</div>
+                    ${opt.amount > 6 ? `<div style="font-size:11px;color:#f5c842;">赠送 ${opt.diamond - opt.amount*10} 红钻</div>` : ''}
+                </div>`
+            ).join('');
+            const html = `
+                <h3><i class="fas fa-plus-circle"></i> 充值红钻</h3>
+                <p class="sub" style="color:#8892a8;font-size:14px;">选择充值档位，提交后等待管理员审核。</p>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0;">
+                    ${optionsHtml}
+                </div>
+                <div style="text-align:center;margin:8px 0;">
+                    <span id="selectedRecharge" style="color:#f5c842;">请选择档位</span>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeRecharge()">取消</button>
+                    <button class="btn btn-success" id="submitRechargeBtn" disabled>提交充值</button>
+                </div>
+            `;
+            document.getElementById('rechargeModalContent').innerHTML = html;
+            document.getElementById('rechargeModal').classList.add('active');
+            document.getElementById('submitRechargeBtn').addEventListener('click', submitRecharge);
+        };
+
+        window.selectRecharge = function(el, amount, diamond) {
+            document.querySelectorAll('.recharge-option').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedRecharge = { amount, diamond };
+            document.getElementById('selectedRecharge').textContent = `已选 ¥${amount} → ${diamond} 红钻`;
+            document.getElementById('submitRechargeBtn').disabled = false;
+        };
+
+        function submitRecharge() {
+            if (!selectedRecharge) return toast('请选择档位', 'warning');
+            apiRequest('/recharges', {
+                method: 'POST',
+                body: JSON.stringify({ amount: selectedRecharge.amount, diamond: selectedRecharge.diamond })
+            }).then(() => {
+                closeRecharge();
+                toast('充值申请已提交', 'success');
+                renderBossView();
+            }).catch(err => toast(err.message, 'error'));
+        }
+
+        window.closeRecharge = function() {
+            document.getElementById('rechargeModal').classList.remove('active');
+            selectedRecharge = null;
+        };
+
+        // ============================================================
+        //  邮件
+        // ============================================================
+        window.openMail = function() {
+            apiRequest('/mails').then(mails => {
+                let listHtml = '';
+                if (mails.length === 0) {
+                    listHtml = '<div class="empty-state"><i class="fas fa-envelope"></i><p>暂无邮件</p></div>';
+                } else {
+                    listHtml = mails.map(m => {
+                        const statusText2 = m.status === 'unread' ? '未领取' : '已领取';
+                        const statusCls = m.status === 'unread' ? 'status-pending' : 'status-claimed';
+                        let actions = '';
+                        if (m.status === 'unread' && m.diamond > 0) {
+                            actions =
+                                `<button class="btn btn-success btn-xs" onclick="claimMail('${m.id}')">领取 ${m.diamond} 红钻</button>`;
+                        }
+                        return `
+                            <div class="mail-item">
+                                <div style="display:flex;justify-content:space-between;">
+                                    <span class="mail-title">${m.title}</span>
+                                    <span class="mail-status"><span class="status-badge ${statusCls}">${statusText2}</span></span>
+                                </div>
+                                <div style="font-size:14px;color:#b0b8c8;padding:4px 0;">${m.content}</div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#8892a8;">
+                                    <span>${m.createTime}</span>
+                                    ${actions}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                const html = `
+                    <h3><i class="fas fa-envelope"></i> 我的邮件</h3>
+                    <div style="margin-top:12px;max-height:400px;overflow-y:auto;">
+                        ${listHtml}
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-outline" onclick="closeMail()">关闭</button>
+                    </div>
+                `;
+                document.getElementById('mailModalContent').innerHTML = html;
+                document.getElementById('mailModal').classList.add('active');
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        window.closeMail = function() {
+            document.getElementById('mailModal').classList.remove('active');
+        };
+
+        window.claimMail = function(mailId) {
+            apiRequest('/mails/' + mailId + '/claim', {
+                method: 'PUT'
+            }).then(() => {
+                toast('领取成功', 'success');
+                openMail();
+                renderBossView();
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        // ============================================================
+        //  聊天
+        // ============================================================
+        window.openChat = function(orderId) {
+            apiRequest('/orders/my').then(orders => {
+                const order = orders.find(o => o.id === orderId);
+                if (!order) return toast('订单不存在', 'error');
+                const isEnded = order.status === 'completed' || order.status === 'canceled' || order.status === 'rejected';
+                const canSend = !isEnded;
+                let messagesHtml = '';
+                if (order.messages && order.messages.length > 0) {
+                    messagesHtml = order.messages.map(msg => {
+                        let senderName = msg.sender === 'boss' ? '老板' : msg.sender === 'handler' ? '打手' :
+                            '系统';
+                        let senderClass = msg.sender === 'boss' ? 'boss' : msg.sender === 'handler' ? 'handler' :
+                            'system';
+                        return `
+                            <div class="chat-msg ${senderClass}">
+                                <strong>${senderName}:</strong> ${msg.content}
+                                <span class="time">${msg.time}</span>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    messagesHtml = '<div class="empty-state"><p>暂无消息</p></div>';
+                }
+                const chatHtml = `
+                    <h3><i class="fas fa-comment"></i> 订单 ${order.id} 聊天</h3>
+                    <p style="font-size:13px;color:#8892a8;margin-bottom:4px;">${order.game} · ${order.title}</p>
+                    <p style="font-size:12px;color:#5a6378;margin-bottom:8px;">状态：${statusText(order.status)} ${isEnded ? '（已结束，只读）' : ''}</p>
+                    <div class="chat-messages" id="chatMessages">
+                        ${messagesHtml}
+                    </div>
+                    <div class="${isEnded ? 'chat-readonly' : ''}">
+                        <div class="chat-input-area">
+                            <input type="text" id="chatInput" placeholder="${isEnded ? '订单已结束' : '输入消息...'}" ${isEnded ? 'disabled' : ''}>
+                            <button class="btn btn-primary btn-sm" id="chatSendBtn" ${isEnded ? 'disabled' : ''}><i class="fas fa-paper-plane"></i> 发送</button>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-outline" onclick="closeChat()">关闭</button>
+                    </div>
+                `;
+                document.getElementById('chatModalContent').innerHTML = chatHtml;
+                document.getElementById('chatModal').classList.add('active');
+                const msgContainer = document.getElementById('chatMessages');
+                if (msgContainer) msgContainer.scrollTop = msgContainer.scrollHeight;
+                const sendBtn = document.getElementById('chatSendBtn');
+                const input = document.getElementById('chatInput');
+                if (sendBtn && input && !isEnded) {
+                    const sendMessage = function() {
+                        const text = input.value.trim();
+                        if (!text) return toast('请输入消息', 'warning');
+                        apiRequest('/orders/' + orderId + '/chat', {
+                            method: 'POST',
+                            body: JSON.stringify({ content: text })
+                        }).then(() => {
+                            openChat(orderId);
+                            toast('消息已发送', 'success');
+                        }).catch(err => toast(err.message, 'error'));
+                    };
+                    sendBtn.addEventListener('click', sendMessage);
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') sendMessage();
+                    });
+                }
+            }).catch(err => toast(err.message, 'error'));
+        };
+
+        window.closeChat = function() {
+            document.getElementById('chatModal').classList.remove('active');
+        };
+
+        // ============================================================
+        //  聊天发送（后端需要增加一个路由）
+        // ============================================================
+        // 注意：需要在后端 server.js 中添加：
+        // app.post('/api/orders/:id/chat', verifyToken, async (req, res) => {
+        //   const order = await Order.findById(req.params.id);
+        //   if (!order) return res.status(404).json({ error: '订单不存在' });
+        //   order.messages.push({ sender: currentUser.role, content: req.body.content, time: new Date() });
+        //   await order.save();
+        //   res.json({ message: '发送成功' });
+        // });
+
+        // ============================================================
+        //  底部导航点击
+        // ============================================================
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (!currentUser) return toast('请先登录', 'warning');
+                const target = this.dataset.target;
+                document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.role-view').forEach(v => v.classList.remove('active'));
+                if (target === 'home') {
+                    // 返回首页（登录页）
+                    logout();
+                    return;
+                }
+                const roleView = document.getElementById('role-' + target);
+                if (roleView) {
+                    roleView.classList.add('active');
+                    if (target === 'admin') renderAdminAll();
+                    else if (target === 'boss') renderBossView();
+                    else if (target === 'handler') renderHandlerView();
+                }
+            });
+        });
+
+        // ============================================================
+        //  初始化 - 检查是否已登录
+        // ============================================================
+        if (token) {
+            apiRequest('/me').then(user => {
+                currentUser = user;
+                document.getElementById('authPage').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('currentUserDisplay').textContent = user.username + ' (' + user.role + ')';
+                document.querySelectorAll('.role-view').forEach(v => v.classList.remove('active'));
+                const roleView = document.getElementById('role-' + user.role);
+                if (roleView) roleView.classList.add('active');
+                document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+                if (user.role === 'admin') {
+                    document.getElementById('navAdmin').classList.add('active');
+                    renderAdminAll();
+                } else if (user.role === 'boss') {
+                    document.getElementById('navBoss').classList.add('active');
+                    renderBossView();
+                } else if (user.role === 'handler') {
+                    document.getElementById('navHandler').classList.add('active');
+                    renderHandlerView();
+                }
+            }).catch(() => {
+                localStorage.removeItem('token');
+                token = null;
+            });
+        }
+
+        console.log('✅ QW电竞护航平台已加载');
+        console.log('后端地址:', API_URL);
+    </script>
+
+</body>
+</html>
