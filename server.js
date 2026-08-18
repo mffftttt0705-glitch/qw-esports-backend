@@ -50,7 +50,7 @@ const OrderSchema = new mongoose.Schema({
   productId: mongoose.Schema.Types.ObjectId,
   bossId: mongoose.Schema.Types.ObjectId,
   handlerId: mongoose.Schema.Types.ObjectId,
-  status: { type: String, enum: ['pending', 'ongoing', 'review', 'completed', 'canceled', 'rejected'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'ongoing', 'review', 'completed', 'canceled', 'rejected', 'refund_pending', 'refunded'], default: 'pending' },
   price: Number,
   game: String,
   title: String,
@@ -60,6 +60,8 @@ const OrderSchema = new mongoose.Schema({
   endTime: Date,
   messages: [{ sender: String, content: String, time: Date }],
   settled: { type: Boolean, default: false },
+  settledAmount: { type: Number, default: 0 },
+  refundReason: String,
   hidden: { type: Boolean, default: false }
 });
 const Order = mongoose.model('Order', OrderSchema);
@@ -74,7 +76,6 @@ const RechargeSchema = new mongoose.Schema({
 });
 const Recharge = mongoose.model('Recharge', RechargeSchema);
 
-// ========== 公告模型 ==========
 const AnnounceSchema = new mongoose.Schema({
   content: { type: String, default: '欢迎使用 QW电竞护航平台！' },
   images: { type: [String], default: [] },
@@ -82,7 +83,6 @@ const AnnounceSchema = new mongoose.Schema({
 });
 const Announce = mongoose.model('Announce', AnnounceSchema);
 
-// ========== 邮件模型 ==========
 const MailSchema = new mongoose.Schema({
   userId: mongoose.Schema.Types.ObjectId,
   type: { type: String, enum: ['recharge', 'gift', 'system'] },
@@ -99,10 +99,7 @@ const Mail = mongoose.model('Mail', MailSchema);
 async function initAnnounce() {
   const count = await Announce.countDocuments();
   if (count === 0) {
-    const announce = new Announce({
-      content: '欢迎使用 QW电竞护航平台！',
-      images: []
-    });
+    const announce = new Announce({ content: '欢迎使用 QW电竞护航平台！', images: [] });
     await announce.save();
   }
 }
@@ -193,7 +190,6 @@ app.post('/api/admin/products', verifyToken, async (req, res) => {
   res.json(product);
 });
 
-// 商品下架
 app.put('/api/admin/products/:id/unshelf', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -208,7 +204,6 @@ app.put('/api/admin/products/:id/unshelf', verifyToken, async (req, res) => {
   }
 });
 
-// 重新上架商品
 app.put('/api/admin/products/:id/reshelf', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -223,7 +218,6 @@ app.put('/api/admin/products/:id/reshelf', verifyToken, async (req, res) => {
   }
 });
 
-// 删除商品
 app.delete('/api/admin/products/:id', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -264,7 +258,6 @@ app.post('/api/orders/buy', verifyToken, async (req, res) => {
   res.json({ orderId: order._id, message: '购买成功' });
 });
 
-// 直接发布订单（管理员创建订单到打手页面）
 app.post('/api/admin/orders/direct', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -297,6 +290,16 @@ app.get('/api/orders/my', verifyToken, async (req, res) => {
   else return res.status(403).json({ error: '无权查看' });
   const orders = await Order.find(query).sort({ createTime: -1 });
   res.json(orders);
+});
+
+app.get('/api/orders/:id', verifyToken, async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  const user = await User.findById(req.userId);
+  if (order.bossId.toString() !== user._id.toString() && order.handlerId && order.handlerId.toString() !== user._id.toString() && user.role !== 'admin') {
+    return res.status(403).json({ error: '无权查看' });
+  }
+  res.json(order);
 });
 
 app.get('/api/admin/orders', verifyToken, async (req, res) => {
@@ -370,19 +373,70 @@ app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   res.json({ message: '订单已取消' });
 });
 
+// 管理员结算（自定义金额）
 app.put('/api/admin/orders/:id/settle', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
   const { earning } = req.body;
   const order = await Order.findById(req.params.id);
   if (!order) return res.status(404).json({ error: '订单不存在' });
+  if (order.settled) return res.status(400).json({ error: '已结算' });
+  if (order.status !== 'completed') return res.status(400).json({ error: '只有已完成订单可结算' });
   const handler = await User.findById(order.handlerId);
   if (!handler) return res.status(400).json({ error: '打手不存在' });
-  handler.balance += earning;
+  const amount = parseFloat(earning);
+  if (isNaN(amount) || amount < 0) return res.status(400).json({ error: '金额无效' });
+  handler.balance = (handler.balance || 0) + amount;
   await handler.save();
   order.settled = true;
+  order.settledAmount = amount;
   await order.save();
-  res.json({ message: '结算成功' });
+  res.json({ success: true, message: `结算成功，打手收入 ¥${amount}` });
+});
+
+// 老板发起退款
+app.put('/api/orders/:id/refund-request', verifyToken, async (req, res) => {
+  const user = await User.findById(req.userId);
+  if (user.role !== 'boss') return res.status(403).json({ error: '只有老板可发起退款' });
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  if (order.bossId.toString() !== user._id.toString()) return res.status(403).json({ error: '不是你的订单' });
+  if (order.status === 'completed') return res.status(400).json({ error: '已完成订单不可退款' });
+  if (order.status === 'refunded' || order.status === 'refund_pending') return res.status(400).json({ error: '已处理退款' });
+  const { reason } = req.body;
+  if (!reason) return res.status(400).json({ error: '请填写退款原因' });
+  order.status = 'refund_pending';
+  order.refundReason = reason;
+  await order.save();
+  res.json({ success: true, message: '退款申请已提交，等待管理员审核' });
+});
+
+// 管理员处理退款
+app.put('/api/admin/orders/:id/refund', verifyToken, async (req, res) => {
+  const admin = await User.findById(req.userId);
+  if (admin.role !== 'admin') return res.status(403).json({ error: '无权操作' });
+  const { approve, rejectReason } = req.body;
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ error: '订单不存在' });
+  if (order.status !== 'refund_pending') return res.status(400).json({ error: '该订单未发起退款' });
+  if (approve === true) {
+    // 退款通过：返还红钻
+    const boss = await User.findById(order.bossId);
+    if (boss) {
+      boss.diamond = (boss.diamond || 0) + order.price * 10;
+      await boss.save();
+    }
+    order.status = 'refunded';
+    order.messages.push({ sender: 'system', content: `✅ 退款已通过，红钻已返还`, time: new Date() });
+    res.json({ success: true, message: '退款已通过，红钻已返还' });
+  } else {
+    // 退款拒绝
+    order.status = 'ongoing'; // 恢复到进行中
+    order.refundReason = order.refundReason + ' (已拒绝：' + (rejectReason || '无原因') + ')';
+    order.messages.push({ sender: 'system', content: `❌ 退款被拒绝：${rejectReason || '无原因'}`, time: new Date() });
+    res.json({ success: true, message: '退款已拒绝' });
+  }
+  await order.save();
 });
 
 // ========== 充值 API ==========
@@ -400,7 +454,6 @@ app.get('/api/admin/recharges', verifyToken, async (req, res) => {
   res.json(recharges);
 });
 
-// 充值审核通过
 app.put('/api/admin/recharges/:id/approve', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -422,7 +475,6 @@ app.put('/api/admin/recharges/:id/approve', verifyToken, async (req, res) => {
   }
 });
 
-// 充值审核拒绝
 app.put('/api/admin/recharges/:id/reject', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -438,7 +490,6 @@ app.put('/api/admin/recharges/:id/reject', verifyToken, async (req, res) => {
   }
 });
 
-// 删除充值申请
 app.delete('/api/admin/recharges/:id', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -497,12 +548,12 @@ app.post('/api/orders/:id/chat', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   const order = await Order.findById(req.params.id);
   if (!order) return res.status(404).json({ error: '订单不存在' });
-  if (order.bossId.toString() !== user._id.toString() && order.handlerId && order.handlerId.toString() !== user._id.toString()) {
+  if (order.bossId.toString() !== user._id.toString() && order.handlerId && order.handlerId.toString() !== user._id.toString() && user.role !== 'admin') {
     return res.status(403).json({ error: '无权操作' });
   }
   const { content } = req.body;
   if (!content) return res.status(400).json({ error: '内容不能为空' });
-  const sender = user.role === 'boss' ? 'boss' : user.role === 'handler' ? 'handler' : 'system';
+  const sender = user.role === 'boss' ? 'boss' : user.role === 'handler' ? 'handler' : 'admin';
   order.messages.push({ sender, content, time: new Date() });
   await order.save();
   res.json({ message: '发送成功' });
