@@ -157,7 +157,6 @@
 </head>
 <body>
 
-<!-- ===== 登录/注册页面 ===== -->
 <div id="authPage">
     <div class="logo"><i class="fas fa-crosshairs"></i> QW电竞</div>
     <div class="sub">护航平台 · 暗区突围 / 三角洲</div>
@@ -176,7 +175,6 @@
     </div>
 </div>
 
-<!-- ===== 主应用 ===== -->
 <div id="mainApp" class="app-wrapper hidden">
     <div class="view-container">
         <div class="app-header">
@@ -190,7 +188,6 @@
             </div>
         </div>
 
-        <!-- 首页 -->
         <div class="view active" id="view-home">
             <div class="announcement" id="homeAnnounce">
                 <div class="content" id="announceContent">加载中...</div>
@@ -212,7 +209,6 @@
             </div>
         </div>
 
-        <!-- 老板视图 -->
         <div class="role-view" id="view-boss">
             <div class="card" style="background:linear-gradient(135deg,#1a2a4a,#0b0d15);border:1px solid #f5c84244;">
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
@@ -228,7 +224,6 @@
             <div class="card"><div class="card-title"><i class="fas fa-history"></i> 我的订单</div><div id="bossMyOrders"></div></div>
         </div>
 
-        <!-- 打手视图 -->
         <div class="role-view" id="view-handler">
             <div class="card"><div class="card-title"><i class="fas fa-wallet"></i> 我的余额</div><div style="font-size:24px;font-weight:700;color:#69db7c;" id="handlerBalance">¥0</div></div>
             <div class="card"><div class="card-title"><i class="fas fa-clock"></i> 待接单 <span class="badge" id="handlerPendingCount">0</span></div><div id="handlerPendingList"></div></div>
@@ -236,7 +231,6 @@
             <div class="card"><div class="card-title"><i class="fas fa-check-double"></i> 已完成订单</div><div id="handlerCompletedList"></div></div>
         </div>
 
-        <!-- 管理员视图 -->
         <div class="role-view" id="view-admin">
             <div class="tab-nav">
                 <button class="active" data-tab="tab-dashboard"><i class="fas fa-chart-pie"></i> 仪表盘</button>
@@ -315,7 +309,6 @@
             </div>
         </div>
 
-        <!-- 账号管理视图 -->
         <div class="role-view" id="view-account">
             <div class="card">
                 <div class="card-title"><i class="fas fa-user"></i> 账号信息</div>
@@ -331,7 +324,6 @@
 
     </div>
 
-    <!-- 底部导航 -->
     <div class="bottom-nav">
         <button class="nav-item active" data-target="home" id="navHome"><i class="fas fa-home"></i><span>首页</span></button>
         <button class="nav-item" data-target="boss" id="navBoss"><i class="fas fa-shopping-cart"></i><span>商城</span></button>
@@ -341,22 +333,18 @@
     </div>
 </div>
 
-<!-- 模态框 -->
 <div class="modal-overlay" id="customModal"><div class="modal-box" id="customModalContent"></div></div>
 <div id="toast" class="toast"></div>
 
 <script>
 // ============================================================
-//  配置 - ⚠️ 已修改为 Cloudflare Worker 代理地址
+//  配置 - 指向 Cloudflare Worker 后端
 // ============================================================
-const API_URL = 'https://qw-worker.mfffft-tt-t0705.workers.dev/api';
+const API_URL = 'https://qw-worker.mffft-tt-t0705.workers.dev/api';
 let currentUser = null;
 let token = localStorage.getItem('token');
 let announceImages = [];
 
-// ============================================================
-//  工具函数
-// ============================================================
 function toast(msg, type) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -421,9 +409,6 @@ function updateRoleBasedUI() {
     document.getElementById('navHome').style.display = 'flex';
 }
 
-// ============================================================
-//  公告功能
-// ============================================================
 async function loadAnnounce() {
     try {
         const data = await fetch(API_URL + '/announce').then(r => r.json());
@@ -487,9 +472,6 @@ async function saveAnnounce() {
     }
 }
 
-// ============================================================
-//  认证模块
-// ============================================================
 async function doAuthLogin() {
     const username = document.getElementById('authUsername').value.trim();
     const password = document.getElementById('authPassword').value.trim();
@@ -567,9 +549,6 @@ function updateAccountInfo() {
     document.getElementById('accBalanceRow').style.display = currentUser.role === 'handler' || currentUser.role === 'admin' ? 'flex' : 'none';
 }
 
-// ============================================================
-//  导航切换
-// ============================================================
 document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
     item.addEventListener('click', function() {
         if (!currentUser) return toast('请先登录', 'warning');
@@ -607,9 +586,6 @@ document.querySelectorAll('.entry-card[data-target]').forEach(card => {
     });
 });
 
-// ============================================================
-//  管理员渲染
-// ============================================================
 document.querySelectorAll('.tab-nav button').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.tab-nav button').forEach(b => b.classList.remove('active'));
@@ -655,7 +631,6 @@ async function renderDashboard() {
     } catch (err) { console.error(err); }
 }
 
-// ===== 商品管理 =====
 async function renderProducts() {
     try {
         const products = await apiRequest('/admin/products');
@@ -766,7 +741,6 @@ async function doDirectPublish(game, title, desc, price) {
     }
 }
 
-// ===== 订单管理（管理员） =====
 async function renderAdminOrders() {
     try {
         const orders = await apiRequest('/admin/orders');
@@ -910,7 +884,6 @@ window.adminRefundReject = function(orderId) {
         .catch(err => toast(err.message, 'error'));
 };
 
-// ===== 充值管理 =====
 async function renderRecharges() {
     try {
         const recharges = await apiRequest('/admin/recharges');
@@ -996,7 +969,6 @@ window.sendGift = function() {
         .catch(err => toast(err.message, 'error'));
 };
 
-// ===== 用户管理 =====
 async function renderUsers() {
     try {
         const search = document.getElementById('searchUser')?.value.toLowerCase() || '';
@@ -1045,9 +1017,6 @@ async function doResetPassword(userId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// ============================================================
-//  老板视图
-// ============================================================
 async function renderBossView() {
     try {
         const user = await apiRequest('/me');
@@ -1180,9 +1149,6 @@ window.viewOrderDetail = function(orderId) {
     }).catch(err => toast(err.message, 'error'));
 };
 
-// ============================================================
-//  打手视图
-// ============================================================
 async function renderHandlerView() {
     try {
         const user = await apiRequest('/me');
@@ -1289,9 +1255,6 @@ async function doSubmitComplete(orderId) {
     }
 }
 
-// ============================================================
-//  充值
-// ============================================================
 const rechargeOptions = [
     { amount: 1, diamond: 10 },
     { amount: 6, diamond: 60 },
@@ -1340,9 +1303,6 @@ window.closeRecharge = function() {
     selectedRecharge = null;
 };
 
-// ============================================================
-//  邮件
-// ============================================================
 window.openMail = function() {
     apiRequest('/mails').then(mails => {
         let listHtml = mails.length === 0 ? '<div class="empty-state"><i class="fas fa-envelope"></i><p>暂无邮件</p></div>' :
@@ -1378,9 +1338,6 @@ async function doClaimMail(mailId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// ============================================================
-//  聊天
-// ============================================================
 window.openChat = function(orderId) {
     apiRequest('/orders/my').then(orders => {
         const order = orders.find(o => o._id === orderId);
@@ -1425,9 +1382,6 @@ window.openChat = function(orderId) {
     }).catch(err => toast(err.message, 'error'));
 };
 
-// ============================================================
-//  初始化
-// ============================================================
 async function init() {
     document.getElementById('authPage').style.display = 'flex';
     document.getElementById('mainApp').classList.add('hidden');
