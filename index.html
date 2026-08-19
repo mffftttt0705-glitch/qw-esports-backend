@@ -347,9 +347,9 @@
 
 <script>
 // ============================================================
-//  配置
+//  配置 - ⚠️ 已修改为 Cloudflare Worker 代理地址
 // ============================================================
-const API_URL = 'https://qw-esports-backend.vercel.app/api';
+const API_URL = 'https://qw-worker.mfffft-tt-t0705.workers.dev/api';
 let currentUser = null;
 let token = localStorage.getItem('token');
 let announceImages = [];
@@ -691,7 +691,6 @@ async function renderProducts() {
     } catch (err) { console.error(err); }
 }
 
-// 下架
 window.confirmUnshelf = function(productId) {
     confirmAction('确认下架', '确认下架此商品？下架后老板将无法购买。', '确认下架', `doUnshelf('${productId}')`);
 };
@@ -703,7 +702,6 @@ async function doUnshelf(productId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// 重新上架
 window.confirmReshelf = function(productId) {
     confirmAction('确认重新上架', '确认重新上架此商品？', '确认上架', `doReshelf('${productId}')`);
 };
@@ -715,7 +713,6 @@ async function doReshelf(productId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// 删除商品
 window.confirmDeleteProduct = function(productId) {
     confirmAction('确认删除', '确认永久删除此商品？此操作不可恢复。', '确认删除', `doDeleteProduct('${productId}')`);
 };
@@ -744,7 +741,6 @@ async function shelfProduct() {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// ===== 直接发布订单 =====
 window.directPublishOrder = function() {
     const game = document.getElementById('directGame').value;
     const title = document.getElementById('directTitle').value.trim();
@@ -811,7 +807,6 @@ async function renderAdminOrders() {
     } catch (err) { console.error(err); }
 }
 
-// 管理员指派打手
 window.adminAssignHandler = function(orderId) {
     const handlerId = prompt('请输入打手ID：');
     if (!handlerId) return;
@@ -820,7 +815,6 @@ window.adminAssignHandler = function(orderId) {
         .catch(err => toast(err.message, 'error'));
 };
 
-// 管理员强制完成
 window.adminForceComplete = function(orderId) {
     confirmAction('确认强制完成', '确认强制完成此订单？', '确认强制完成', `doForceComplete('${orderId}')`);
 };
@@ -832,7 +826,6 @@ async function doForceComplete(orderId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// 管理员确认完成
 window.adminConfirmComplete = function(orderId) {
     confirmAction('确认验收通过', '确认此订单验收通过？', '确认通过', `doConfirmComplete('${orderId}')`);
 };
@@ -844,7 +837,6 @@ async function doConfirmComplete(orderId) {
     } catch (err) { toast(err.message, 'error'); }
 }
 
-// 管理员驳回
 window.adminRejectOrder = function(orderId) {
     const reason = prompt('请输入驳回原因：');
     if (reason === null) return;
@@ -853,7 +845,6 @@ window.adminRejectOrder = function(orderId) {
         .catch(err => toast(err.message, 'error'));
 };
 
-// 管理员取消订单
 window.adminCancelOrder = function(orderId) {
     confirmAction('确认取消', '确认取消此订单？', '确认取消', `doCancelOrder('${orderId}')`);
 };
@@ -865,7 +856,6 @@ async function doCancelOrder(orderId) {
     } catch (err) { toast(err.message, 'error'); }
 };
 
-// 管理员结算（自定义金额）
 window.adminSettleOrder = function(orderId) {
     showCustomModal(`
         <h3><i class="fas fa-coins"></i> 结算打手</h3>
@@ -894,7 +884,6 @@ async function doSettleOrder(orderId) {
     }
 }
 
-// 管理员处理退款 - 通过
 window.adminRefundApprove = function(orderId) {
     confirmAction('确认通过退款', '确认通过此退款申请？红钻将返还给老板。', '确认通过', `doRefundApprove('${orderId}')`);
 };
@@ -909,7 +898,6 @@ async function doRefundApprove(orderId) {
     }
 }
 
-// 管理员处理退款 - 拒绝
 window.adminRefundReject = function(orderId) {
     const reason = prompt('请输入拒绝原因：');
     if (reason === null) return;
@@ -1108,7 +1096,60 @@ async function renderBossView() {
     } catch (err) { console.error(err); }
 }
 
-// 查看订单详情
+window.confirmBuy = function(productId) {
+    confirmAction('确认购买', '确认购买此商品？将扣除对应红钻。', '确认购买', `doBuy('${productId}')`);
+};
+async function doBuy(productId) {
+    try {
+        const data = await apiRequest('/orders/buy', { method: 'POST', body: JSON.stringify({ productId }) });
+        toast('购买成功！订单号：' + data.orderId, 'success');
+        renderBossView();
+        renderHandlerView();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
+}
+
+window.confirmBossComplete = function(orderId) {
+    confirmAction('确认完成', '确认已完成此订单服务？', '确认完成', `doBossComplete('${orderId}')`);
+};
+async function doBossComplete(orderId) {
+    try {
+        await apiRequest('/orders/' + orderId + '/boss-confirm', { method: 'PUT' });
+        toast('已确认完成，等待管理员结算', 'success');
+        renderBossView();
+        renderHandlerView();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
+}
+
+window.requestRefund = function(orderId) {
+    showCustomModal(`
+        <h3><i class="fas fa-undo"></i> 申请退款</h3>
+        <p style="color:#8892a8;font-size:14px;">请填写退款原因：</p>
+        <div class="form-group"><label>退款原因</label><textarea class="admin-form-control" id="refundReasonInput" rows="3" placeholder="请详细说明退款原因..."></textarea></div>
+        <div class="btn-row">
+            <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
+            <button class="btn btn-warning" onclick="doRequestRefund('${orderId}')">提交退款</button>
+        </div>
+    `);
+};
+
+async function doRequestRefund(orderId) {
+    const reason = document.getElementById('refundReasonInput').value.trim();
+    if (!reason) return toast('请填写退款原因', 'warning');
+    closeCustomModal();
+    try {
+        await apiRequest('/orders/' + orderId + '/refund-request', { method: 'PUT', body: JSON.stringify({ reason }) });
+        toast('退款申请已提交，等待管理员审核', 'success');
+        renderBossView();
+        renderAdminOrders();
+    } catch (err) {
+        toast(err.message, 'error');
+    }
+}
+
 window.viewOrderDetail = function(orderId) {
     apiRequest('/orders/' + orderId).then(order => {
         const handlerName = order.handlerId ? order.handlerId : '未指派';
@@ -1138,61 +1179,6 @@ window.viewOrderDetail = function(orderId) {
         `);
     }).catch(err => toast(err.message, 'error'));
 };
-
-window.confirmBuy = function(productId) {
-    confirmAction('确认购买', '确认购买此商品？将扣除对应红钻。', '确认购买', `doBuy('${productId}')`);
-};
-async function doBuy(productId) {
-    try {
-        const data = await apiRequest('/orders/buy', { method: 'POST', body: JSON.stringify({ productId }) });
-        toast('购买成功！订单号：' + data.orderId, 'success');
-        renderBossView();
-        renderHandlerView();
-    } catch (err) {
-        toast(err.message, 'error');
-    }
-}
-
-window.confirmBossComplete = function(orderId) {
-    confirmAction('确认完成', '确认已完成此订单服务？', '确认完成', `doBossComplete('${orderId}')`);
-};
-async function doBossComplete(orderId) {
-    try {
-        await apiRequest('/orders/' + orderId + '/boss-confirm', { method: 'PUT' });
-        toast('已确认完成，等待管理员结算', 'success');
-        renderBossView();
-        renderHandlerView();
-    } catch (err) {
-        toast(err.message, 'error');
-    }
-}
-
-// 老板发起退款
-window.requestRefund = function(orderId) {
-    showCustomModal(`
-        <h3><i class="fas fa-undo"></i> 申请退款</h3>
-        <p style="color:#8892a8;font-size:14px;">请填写退款原因：</p>
-        <div class="form-group"><label>退款原因</label><textarea class="admin-form-control" id="refundReasonInput" rows="3" placeholder="请详细说明退款原因..."></textarea></div>
-        <div class="btn-row">
-            <button class="btn btn-outline" onclick="closeCustomModal()">取消</button>
-            <button class="btn btn-warning" onclick="doRequestRefund('${orderId}')">提交退款</button>
-        </div>
-    `);
-};
-
-async function doRequestRefund(orderId) {
-    const reason = document.getElementById('refundReasonInput').value.trim();
-    if (!reason) return toast('请填写退款原因', 'warning');
-    closeCustomModal();
-    try {
-        await apiRequest('/orders/' + orderId + '/refund-request', { method: 'PUT', body: JSON.stringify({ reason }) });
-        toast('退款申请已提交，等待管理员审核', 'success');
-        renderBossView();
-        renderAdminOrders();
-    } catch (err) {
-        toast(err.message, 'error');
-    }
-}
 
 // ============================================================
 //  打手视图
