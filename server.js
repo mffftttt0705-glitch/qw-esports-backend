@@ -50,10 +50,10 @@ const OrderSchema = new mongoose.Schema({
   productId: mongoose.Schema.Types.ObjectId,
   bossId: mongoose.Schema.Types.ObjectId,
   handlerId: mongoose.Schema.Types.ObjectId,
-  status: { 
-    type: String, 
-    enum: ['pending', 'ongoing', 'review', 'completed', 'canceled', 'rejected', 'refund_pending', 'refunded'], 
-    default: 'pending' 
+  status: {
+    type: String,
+    enum: ['pending', 'ongoing', 'review', 'completed', 'canceled', 'rejected', 'refund_pending', 'refunded'],
+    default: 'pending'
   },
   price: Number,
   game: String,
@@ -62,7 +62,7 @@ const OrderSchema = new mongoose.Schema({
   createTime: { type: Date, default: Date.now },
   startTime: Date,
   endTime: Date,
-  messages: [{ sender: String, content: String, time: Date }],
+  messages: [{ sender: String, content: String, time: { type: Date, default: Date.now } }],
   settled: { type: Boolean, default: false },
   settledAmount: { type: Number, default: 0 },
   refundReason: String,
@@ -246,6 +246,8 @@ app.post('/api/orders/buy', verifyToken, async (req, res) => {
   if (user.diamond < diamondCost) return res.status(400).json({ error: '红钻不足' });
   user.diamond -= diamondCost;
   await user.save();
+
+  // ===== 修复：先保存订单，再添加消息 =====
   const order = new Order({
     productId: product._id,
     bossId: user._id,
@@ -254,27 +256,34 @@ app.post('/api/orders/buy', verifyToken, async (req, res) => {
     game: product.game,
     title: product.title,
     desc: product.desc || '',
-    messages: [{ sender: 'system', content: `🎉 订单已创建，订单号: ${order._id}`, time: new Date() }]
   });
   await order.save();
+
+  order.messages.push({
+    sender: 'system',
+    content: `🎉 订单已创建，订单号: ${order._id}`,
+    time: new Date()
+  });
+  await order.save();
+
   product.sold += 1;
   await product.save();
   res.json({ orderId: order._id, message: '购买成功' });
 });
 
-// ===== 直接发布订单（管理员创建订单到打手页面）- 修复版 =====
+// ===== 直接发布订单 =====
 app.post('/api/admin/orders/direct', verifyToken, async (req, res) => {
   try {
     const admin = await User.findById(req.userId);
     if (admin.role !== 'admin') return res.status(403).json({ error: '无权操作' });
     const { game, title, desc, price, bossId } = req.body;
     if (!title || !price) return res.status(400).json({ error: '请填写完整信息' });
-    // 如果没指定老板，使用管理员自己作为老板
     let boss = admin;
     if (bossId) {
       const found = await User.findById(bossId);
       if (found && found.role === 'boss') boss = found;
     }
+
     const order = new Order({
       productId: null,
       bossId: boss._id,
@@ -284,9 +293,16 @@ app.post('/api/admin/orders/direct', verifyToken, async (req, res) => {
       game: game || '暗区突围',
       title: title,
       desc: desc || '',
-      messages: [{ sender: 'system', content: `🎉 订单已创建（管理员发布），订单号: ${order._id}`, time: new Date() }]
     });
     await order.save();
+
+    order.messages.push({
+      sender: 'system',
+      content: `🎉 订单已创建（管理员发布），订单号: ${order._id}`,
+      time: new Date()
+    });
+    await order.save();
+
     res.json({ success: true, message: '订单已发布', orderId: order._id });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -364,7 +380,7 @@ app.put('/api/admin/orders/:id/reject', verifyToken, async (req, res) => {
   const order = await Order.findById(req.params.id);
   if (!order) return res.status(404).json({ error: '订单不存在' });
   order.status = 'rejected';
-  order.rejectReason = reason;
+  order.refundReason = reason;
   await order.save();
   res.json({ message: '已驳回' });
 });
@@ -384,7 +400,7 @@ app.put('/api/admin/orders/:id/cancel', verifyToken, async (req, res) => {
   res.json({ message: '订单已取消' });
 });
 
-// ===== 管理员结算（自定义金额） =====
+// ===== 管理员结算 =====
 app.put('/api/admin/orders/:id/settle', verifyToken, async (req, res) => {
   const user = await User.findById(req.userId);
   if (user.role !== 'admin') return res.status(403).json({ error: '无权操作' });
@@ -431,7 +447,6 @@ app.put('/api/admin/orders/:id/refund', verifyToken, async (req, res) => {
   if (!order) return res.status(404).json({ error: '订单不存在' });
   if (order.status !== 'refund_pending') return res.status(400).json({ error: '该订单未发起退款' });
   if (approve === true) {
-    // 退款通过：返还红钻
     const boss = await User.findById(order.bossId);
     if (boss) {
       boss.diamond = (boss.diamond || 0) + order.price * 10;
@@ -442,7 +457,6 @@ app.put('/api/admin/orders/:id/refund', verifyToken, async (req, res) => {
     await order.save();
     res.json({ success: true, message: '退款已通过，红钻已返还' });
   } else {
-    // 退款拒绝
     order.status = 'ongoing';
     order.refundReason = order.refundReason + ' (已拒绝：' + (rejectReason || '无原因') + ')';
     order.messages.push({ sender: 'system', content: `❌ 退款被拒绝：${rejectReason || '无原因'}`, time: new Date() });
